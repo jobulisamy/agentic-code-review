@@ -1,0 +1,32 @@
+{
+  "eval_id": 1,
+  "eval_name": "eval-1-sql-injection",
+  "prompt": "Hey can you review this PR diff for me? We're adding a new user login endpoint to our Flask API. [Flask auth PR with SQL injection, MD5 hashing, no input validation]",
+  "assertions": [
+    {
+      "text": "Review identifies SQL injection vulnerability in the login or register endpoint",
+      "passed": null,
+      "evidence": null
+    },
+    {
+      "text": "Review flags MD5 as insecure for password storage and suggests bcrypt/argon2/scrypt",
+      "passed": null,
+      "evidence": null
+    },
+    {
+      "text": "Security issues are marked as error severity (not just warnings or info)",
+      "passed": null,
+      "evidence": null
+    },
+    {
+      "text": "Overall verdict is REQUEST CHANGES given error-severity security issues",
+      "passed": null,
+      "evidence": null
+    },
+    {
+      "text": "Review includes a structured summary with category breakdown (table or list)",
+      "passed": null,
+      "evidence": null
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "eval_id": 2,
+  "eval_name": "eval-2-n-plus-1",
+  "prompt": "Node.js orders API PR: fetches all orders for a user in a loop (N+1), missing auth check (IDOR), floating point for currency",
+  "assertions": [
+    {
+      "text": "Review identifies the N+1 query pattern in the order_items fetch loop",
+      "passed": null,
+      "evidence": null
+    },
+    {
+      "text": "Review flags that any user can access any other user's orders (IDOR / broken access control)",
+      "passed": null,
+      "evidence": null
+    },
+    {
+      "text": "Review flags floating point arithmetic for monetary values",
+      "passed": null,
+      "evidence": null
+    },
+    {
+      "text": "Findings reference specific line numbers from the diff",
+      "passed": null,
+      "evidence": null
+    }
+  ]
+}

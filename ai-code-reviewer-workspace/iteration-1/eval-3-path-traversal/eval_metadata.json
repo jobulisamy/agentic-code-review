@@ -1,0 +1,27 @@
+{
+  "eval_id": 3,
+  "eval_name": "eval-3-path-traversal",
+  "prompt": "Go file processor PR: path traversal via unsanitized filename, swallowed errors, missing bytes import (compile error), deprecated ioutil",
+  "assertions": [
+    {
+      "text": "Review identifies path traversal vulnerability from unsanitized filename parameter",
+      "passed": null,
+      "evidence": null
+    },
+    {
+      "text": "Review flags that errors from exec, Glob, Stat, or Remove are silently ignored",
+      "passed": null,
+      "evidence": null
+    },
+    {
+      "text": "Review catches either the missing bytes import (compile error) or deprecated ioutil.ReadFile",
+      "passed": null,
+      "evidence": null
+    },
+    {
+      "text": "Path traversal and/or command injection findings are marked as error or critical severity",
+      "passed": null,
+      "evidence": null
+    }
+  ]
+}

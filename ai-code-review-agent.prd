@@ -1,0 +1,398 @@
+# Product Requirements Document (PRD)
+# AI Code Review Agent
+
+**Version:** 1.0.0
+**Author:** [Your Name]
+**Status:** Draft
+**Last Updated:** 2026-03-10
+
+---
+
+## 1. Project Overview
+
+### 1.1 Summary
+An AI-powered code review agent that automatically analyzes code for bugs, security vulnerabilities, style issues, performance problems, and test coverage gaps. The agent integrates with GitHub to post inline PR comments and also provides a browser-based Web UI for on-demand reviews. It is powered by the Claude API (Anthropic) and maintains per-repo review history to deliver increasingly context-aware feedback over time.
+
+### 1.2 Elevator Pitch
+> "An AI agent that reviews your pull requests like a senior engineer — catching bugs, flagging security holes, and suggesting improvements — all posted directly as GitHub PR comments."
+
+### 1.3 Resume Value
+This project demonstrates:
+- Full-stack development (React frontend + Python/FastAPI backend)
+- AI/LLM integration (Claude API with structured prompting)
+- GitHub OAuth & REST API integration
+- Persistent data layer (per-repo review history)
+- Agentic system design (multi-step analysis pipeline)
+- Local Docker-based development environment
+
+---
+
+## 2. Goals & Success Criteria
+
+| Goal | Success Metric |
+|------|---------------|
+| Analyze a PR in under 30 seconds | ≤ 30s end-to-end review time |
+| Cover all 5 feedback categories | All categories present in every review |
+| Post comments directly to GitHub PRs | GitHub API integration working |
+| Web UI is functional and clean | User can paste code and get a review |
+| Per-repo history improves context | History stored and injected into prompts |
+
+---
+
+## 3. Target Users
+
+- **Primary:** The developer (you) — for portfolio demonstration
+- **Secondary:** Recruiters / hiring managers reviewing the project
+- **Tertiary:** Open-source contributors who may fork & use it
+
+---
+
+## 4. Tech Stack
+
+### 4.1 Frontend
+| Technology | Purpose |
+|-----------|---------|
+| React (Vite) | Web UI framework |
+| TypeScript | Type safety |
+| Tailwind CSS | Styling |
+| Axios | API calls to backend |
+| GitHub OAuth (via backend) | Authentication |
+
+### 4.2 Backend
+| Technology | Purpose |
+|-----------|---------|
+| Python 3.11+ | Primary backend language |
+| FastAPI | REST API framework |
+| Anthropic Python SDK | Claude API integration |
+| SQLite + SQLAlchemy | Per-repo review history storage |
+| PyGithub | GitHub API integration |
+| python-dotenv | Environment variable management |
+
+### 4.3 Infrastructure (Local)
+| Technology | Purpose |
+|-----------|---------|
+| Docker + Docker Compose | Local dev environment |
+| GitHub App / OAuth App | PR webhook + API access |
+| SQLite (file-based) | Lightweight local DB |
+
+---
+
+## 5. System Architecture
+
+```
+┌─────────────────────────────────────────────────────────┐
+│                        User                             │
+│         (Browser or GitHub PR author)                   │
+└──────────────┬──────────────────────┬───────────────────┘
+               │                      │
+       ┌───────▼────────┐    ┌────────▼────────┐
+       │   React Web UI │    │  GitHub Webhook │
+       │  (Vite + TS)   │    │   (PR events)   │
+       └───────┬────────┘    └────────┬────────┘
+               │                      │
+       ┌───────▼──────────────────────▼────────┐
+       │           FastAPI Backend              │
+       │  ┌──────────────────────────────────┐ │
+       │  │       Review Agent Pipeline      │ │
+       │  │  1. Code chunker                 │ │
+       │  │  2. History context loader       │ │
+       │  │  3. Claude API call              │ │
+       │  │  4. Response parser              │ │
+       │  │  5. Comment poster               │ │
+       │  └──────────────────────────────────┘ │
+       └────────┬──────────────┬───────────────┘
+                │              │
+       ┌────────▼────┐  ┌──────▼──────────┐
+       │  SQLite DB  │  │  Anthropic API  │
+       │ (repo hist) │  │  (Claude Sonnet)│
+       └─────────────┘  └─────────────────┘
+                              │
+                     ┌────────▼────────┐
+                     │   GitHub API    │
+                     │ (post comments) │
+                     └─────────────────┘
+```
+
+---
+
+## 6. Core Features
+
+### 6.1 Feature 1 — Web UI Code Review
+**Description:** User pastes code into a browser interface, selects a language, and receives an AI-generated review.
+
+**Requirements:**
+- Code editor input (syntax-highlighted textarea or Monaco editor)
+- Language selector dropdown (Python, JavaScript, TypeScript, Java, Go, etc.)
+- "Review Code" button triggers backend API call
+- Results displayed as categorized, inline-annotated feedback
+- Each finding shows: severity (error/warning/info), line number, category, and suggestion
+
+**Acceptance Criteria:**
+- [ ] User can paste code and receive a review in < 30 seconds
+- [ ] Output is organized by category (Bug, Security, Style, Performance, Tests)
+- [ ] Each finding links to the relevant line number
+
+---
+
+### 6.2 Feature 2 — GitHub PR Integration
+**Description:** When a PR is opened or updated, the agent automatically reviews the diff and posts inline comments on GitHub.
+
+**Requirements:**
+- GitHub App or OAuth App configured with webhook on `pull_request` events
+- Backend receives webhook, extracts PR diff via GitHub API
+- Diff is sent through review pipeline
+- Findings posted as inline review comments on the specific lines
+- Summary comment posted at top of PR with overall score and category breakdown
+
+**Acceptance Criteria:**
+- [ ] Webhook received and processed within 10 seconds of PR creation
+- [ ] Inline comments appear on correct lines in GitHub UI
+- [ ] Summary comment includes: total issues found, breakdown by category, severity counts
+
+---
+
+### 6.3 Feature 3 — Review Analysis Pipeline
+**Description:** The multi-step agent pipeline that processes code and produces structured feedback.
+
+**Pipeline Steps:**
+1. **Chunker** — Split large files into reviewable chunks (max ~300 lines per chunk)
+2. **History Loader** — Query SQLite for past reviews on same repo; inject as context
+3. **Claude API Call** — Send structured prompt with code, history context, and instructions
+4. **Response Parser** — Parse Claude's JSON-structured output into finding objects
+5. **Comment Poster** — Map findings to GitHub inline comments or Web UI response
+
+**Prompt Design:**
+```
+System: You are an expert code reviewer. Analyze the following code and return 
+a JSON array of findings. Each finding must include:
+- category: "bug" | "security" | "style" | "performance" | "test_coverage"
+- severity: "error" | "warning" | "info"
+- line_start: integer
+- line_end: integer
+- title: string (short)
+- description: string (detailed explanation)
+- suggestion: string (concrete fix)
+
+Previous review context for this repo: {history_context}
+Language: {language}
+Code:
+{code_chunk}
+```
+
+**Acceptance Criteria:**
+- [ ] Pipeline handles files up to 1,000 lines
+- [ ] Structured JSON always returned and parseable
+- [ ] History context injected when available
+
+---
+
+### 6.4 Feature 4 — Per-Repo Review History
+**Description:** Store all past reviews per repository to give the agent growing context over time.
+
+**Data Model:**
+```sql
+-- repos table
+CREATE TABLE repos (
+  id INTEGER PRIMARY KEY,
+  github_repo_id TEXT UNIQUE NOT NULL,
+  repo_name TEXT NOT NULL,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+-- reviews table
+CREATE TABLE reviews (
+  id INTEGER PRIMARY KEY,
+  repo_id INTEGER REFERENCES repos(id),
+  pr_number INTEGER,
+  file_path TEXT,
+  code_snippet TEXT,
+  findings_json TEXT,  -- JSON array of findings
+  reviewed_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+```
+
+**Acceptance Criteria:**
+- [ ] Every review is saved to SQLite after completion
+- [ ] On next review of same repo, last 5 reviews are loaded as context
+- [ ] History is summarized (not raw) before injection to save tokens
+
+---
+
+### 6.5 Feature 5 — Review Dashboard (Web UI)
+**Description:** A simple dashboard showing review history, stats, and past findings.
+
+**Requirements:**
+- List of past reviews with date, repo name, file, and finding counts
+- Click into any past review to see full findings
+- Simple stats bar: total reviews run, total bugs found, total security issues
+
+**Acceptance Criteria:**
+- [ ] Dashboard loads past reviews from backend API
+- [ ] Stats update after each new review
+- [ ] Responsive layout (desktop + tablet)
+
+---
+
+## 7. API Endpoints
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/api/review` | Submit code for Web UI review |
+| POST | `/api/webhook/github` | Receive GitHub PR webhook |
+| GET | `/api/reviews` | List all past reviews |
+| GET | `/api/reviews/{id}` | Get a single review's findings |
+| GET | `/api/repos` | List all tracked repos |
+| GET | `/api/health` | Health check |
+
+---
+
+## 8. Project Structure
+
+```
+ai-code-review-agent/
+├── frontend/                  # React + TypeScript + Vite
+│   ├── src/
+│   │   ├── components/
+│   │   │   ├── CodeEditor.tsx
+│   │   │   ├── ReviewResults.tsx
+│   │   │   ├── FindingCard.tsx
+│   │   │   └── Dashboard.tsx
+│   │   ├── pages/
+│   │   │   ├── Home.tsx
+│   │   │   └── History.tsx
+│   │   ├── api/
+│   │   │   └── client.ts
+│   │   └── App.tsx
+│   ├── package.json
+│   └── vite.config.ts
+│
+├── backend/                   # Python + FastAPI
+│   ├── app/
+│   │   ├── main.py            # FastAPI app entry point
+│   │   ├── routers/
+│   │   │   ├── review.py      # /api/review endpoint
+│   │   │   ├── webhook.py     # /api/webhook/github
+│   │   │   └── history.py     # /api/reviews, /api/repos
+│   │   ├── agent/
+│   │   │   ├── pipeline.py    # Main review pipeline
+│   │   │   ├── chunker.py     # Code chunking logic
+│   │   │   ├── prompt.py      # Prompt templates
+│   │   │   └── parser.py      # Claude response parser
+│   │   ├── services/
+│   │   │   ├── claude.py      # Anthropic SDK wrapper
+│   │   │   └── github.py      # PyGithub wrapper
+│   │   ├── db/
+│   │   │   ├── models.py      # SQLAlchemy models
+│   │   │   └── database.py    # DB connection + session
+│   │   └── config.py          # App settings
+│   ├── requirements.txt
+│   └── .env.example
+│
+├── docker-compose.yml
+├── README.md
+└── .gitignore
+```
+
+---
+
+## 9. Environment Variables
+
+```env
+# Anthropic
+ANTHROPIC_API_KEY=your_key_here
+
+# GitHub App / OAuth
+GITHUB_APP_ID=
+GITHUB_PRIVATE_KEY_PATH=./keys/github-app.pem
+GITHUB_WEBHOOK_SECRET=
+
+# App
+DATABASE_URL=sqlite:///./reviews.db
+BACKEND_PORT=8000
+FRONTEND_PORT=5173
+```
+
+---
+
+## 10. Development Phases
+
+### Phase 1 — Foundation (Week 1-2)
+- [ ] Set up repo, Docker Compose, and project structure
+- [ ] Build FastAPI backend skeleton with health check
+- [ ] Set up SQLite with SQLAlchemy models
+- [ ] Integrate Anthropic SDK — basic Claude call working
+
+### Phase 2 — Core Agent (Week 2-3)
+- [ ] Build review pipeline (chunker → prompt → parse)
+- [ ] Implement `/api/review` endpoint
+- [ ] Write prompt templates for all 5 feedback categories
+- [ ] Validate structured JSON output from Claude
+
+### Phase 3 — Web UI (Week 3-4)
+- [ ] Scaffold React + Vite + Tailwind frontend
+- [ ] Build CodeEditor component
+- [ ] Build ReviewResults + FindingCard components
+- [ ] Connect frontend to backend API
+
+### Phase 4 — GitHub Integration (Week 4-5)
+- [ ] Create GitHub App, configure webhooks
+- [ ] Implement webhook receiver endpoint
+- [ ] Post inline PR comments via GitHub API
+- [ ] Post summary comment on PR
+
+### Phase 5 — History & Dashboard (Week 5-6)
+- [ ] Save all reviews to SQLite
+- [ ] Build history context injection into pipeline
+- [ ] Build Dashboard page with past reviews & stats
+
+### Phase 6 — Polish (Week 6)
+- [ ] Error handling, loading states, edge cases
+- [ ] README with screenshots and setup guide
+- [ ] Demo video / GIF for resume/portfolio
+
+---
+
+## 11. Out of Scope (v1.0)
+
+- Cloud deployment (intentionally local-only for v1)
+- User authentication / multi-user support
+- Support for compiled languages (C++, Rust) beyond basic analysis
+- Automatic code fix suggestions (auto-PR creation)
+- Slack / email notifications
+
+---
+
+## 12. Risks & Mitigations
+
+| Risk | Likelihood | Mitigation |
+|------|-----------|------------|
+| Claude API costs exceed budget | Medium | Set max_tokens limits, cache repeat reviews |
+| GitHub webhook setup complexity | Medium | Use ngrok for local webhook tunneling |
+| Large PRs exceed context window | Medium | Chunker splits files into ≤300 line segments |
+| JSON parsing failures from Claude | Low | Add retry logic + fallback plain-text parser |
+
+---
+
+## 13. Stretch Goals (v2.0)
+
+- [ ] Deploy to Vercel (frontend) + Railway (backend)
+- [ ] Support multi-model comparison (Claude vs GPT-4)
+- [ ] VS Code extension integration
+- [ ] Severity score trend chart per repo over time
+- [ ] Auto-suggest fixes via Claude (not just identify issues)
+
+---
+
+## 14. Resume Talking Points
+
+When presenting this project in interviews, highlight:
+
+1. **"I built a multi-step agentic pipeline"** — code chunking → context loading → LLM call → structured parsing → GitHub API posting
+2. **"Full-stack: React/TypeScript frontend + Python/FastAPI backend"**
+3. **"Integrated Claude API with structured JSON prompting and response validation"**
+4. **"Built GitHub App integration using webhooks and the GitHub REST API"**
+5. **"Implemented per-repo persistent memory using SQLite to improve review context over time"**
+
+---
+
+*End of PRD v1.0*

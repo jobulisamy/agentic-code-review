@@ -1,0 +1,96 @@
+{
+  "skill_name": "ai-code-reviewer",
+  "iteration": 1,
+  "configurations": [
+    {
+      "name": "with_skill",
+      "evals": [
+        {
+          "eval_id": 1,
+          "eval_name": "eval-1-sql-injection",
+          "pass_rate": 1.0,
+          "pass_count": 5,
+          "total_count": 5,
+          "duration_ms": 65434,
+          "total_tokens": 14980
+        },
+        {
+          "eval_id": 2,
+          "eval_name": "eval-2-n-plus-1",
+          "pass_rate": 1.0,
+          "pass_count": 4,
+          "total_count": 4,
+          "duration_ms": 68592,
+          "total_tokens": 14915
+        },
+        {
+          "eval_id": 3,
+          "eval_name": "eval-3-path-traversal",
+          "pass_rate": 1.0,
+          "pass_count": 4,
+          "total_count": 4,
+          "duration_ms": 75175,
+          "total_tokens": 15113
+        }
+      ],
+      "aggregate": {
+        "pass_rate_mean": 1.0,
+        "pass_rate_stddev": 0.0,
+        "duration_ms_mean": 69733.67,
+        "total_tokens_mean": 15002.67
+      }
+    },
+    {
+      "name": "without_skill",
+      "evals": [
+        {
+          "eval_id": 1,
+          "eval_name": "eval-1-sql-injection",
+          "pass_rate": 0.8,
+          "pass_count": 4,
+          "total_count": 5,
+          "duration_ms": 37342,
+          "total_tokens": 10386
+        },
+        {
+          "eval_id": 2,
+          "eval_name": "eval-2-n-plus-1",
+          "pass_rate": 1.0,
+          "pass_count": 4,
+          "total_count": 4,
+          "duration_ms": 40631,
+          "total_tokens": 10303
+        },
+        {
+          "eval_id": 3,
+          "eval_name": "eval-3-path-traversal",
+          "pass_rate": 1.0,
+          "pass_count": 4,
+          "total_count": 4,
+          "duration_ms": 43580,
+          "total_tokens": 10469
+        }
+      ],
+      "aggregate": {
+        "pass_rate_mean": 0.933,
+        "pass_rate_stddev": 0.094,
+        "duration_ms_mean": 40517.67,
+        "total_tokens_mean": 10386.0
+      }
+    }
+  ],
+  "delta": {
+    "pass_rate": "+0.067 (with_skill wins)",
+    "duration_ms": "+29216ms (with_skill is slower)",
+    "total_tokens": "+4617 tokens (with_skill uses more)"
+  },
+  "analyst_observations": [
+    "with_skill achieves 100% pass rate vs 93.3% baseline — the only failure was the structured summary table assertion on eval-1 baseline",
+    "The skill's output format is significantly more structured: inline [CATEGORY][severity] labels, markdown summary table, and 'What's Good' section are consistent across all 3 runs",
+    "Baseline reviews are high-quality but free-form — good content coverage, weaker on output consistency and GitHub-ready formatting",
+    "The skill uses ~44% more tokens (15003 vs 10386 avg) due to richer formatting and more extensive inline comment blocks",
+    "The skill is ~72% slower (69734ms vs 40518ms avg) — the extra time is spent on structured analysis phases",
+    "Eval-2 and Eval-3 were perfect for both configurations — those assertions may be too easy (both catch N+1, path traversal, etc.). The differentiating assertion is the summary table in eval-1.",
+    "The 'What's Good' section (calling out correct use of parameterized queries, sensible response shapes) only appeared in the with-skill outputs — adds meaningful positivity absent in baseline"
+  ]
+}

@@ -1,0 +1,1325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Eval Review</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600&family=Lora:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js" integrity="sha384-EnyY0/GSHQGSxSgMwaIPzSESbqoOLSexfnSMN2AP+39Ckmn92stwABZynq1JyzdT" crossorigin="anonymous"></script>
+  <style>
+    :root {
+      --bg: #faf9f5;
+      --surface: #ffffff;
+      --border: #e8e6dc;
+      --text: #141413;
+      --text-muted: #b0aea5;
+      --accent: #d97757;
+      --accent-hover: #c4613f;
+      --green: #788c5d;
+      --green-bg: #eef2e8;
+      --red: #c44;
+      --red-bg: #fceaea;
+      --header-bg: #141413;
+      --header-text: #faf9f5;
+      --radius: 6px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Lora', Georgia, serif;
+      background: var(--bg);
+      color: var(--text);
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ---- Header ---- */
+    .header {
+      background: var(--header-bg);
+      color: var(--header-text);
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-shrink: 0;
+    }
+    .header h1 {
+      font-family: 'Poppins', sans-serif;
+      font-size: 1.25rem;
+      font-weight: 600;
+    }
+    .header .instructions {
+      font-size: 0.8rem;
+      opacity: 0.7;
+      margin-top: 0.25rem;
+    }
+    .header .progress {
+      font-size: 0.875rem;
+      opacity: 0.8;
+      text-align: right;
+    }
+
+    /* ---- Main content ---- */
+    .main {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1.5rem 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    /* ---- Sections ---- */
+    .section {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      flex-shrink: 0;
+    }
+    .section-header {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.75rem 1rem;
+      font-size: 0.75rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border);
+      background: var(--bg);
+    }
+    .section-body {
+      padding: 1rem;
+    }
+
+    /* ---- Config badge ---- */
+    .config-badge {
+      display: inline-block;
+      padding: 0.2rem 0.625rem;
+      border-radius: 9999px;
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.6875rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      margin-left: 0.75rem;
+      vertical-align: middle;
+    }
+    .config-badge.config-primary {
+      background: rgba(33, 150, 243, 0.12);
+      color: #1976d2;
+    }
+    .config-badge.config-baseline {
+      background: rgba(255, 193, 7, 0.15);
+      color: #f57f17;
+    }
+
+    /* ---- Prompt ---- */
+    .prompt-text {
+      white-space: pre-wrap;
+      font-size: 0.9375rem;
+      line-height: 1.6;
+    }
+
+    /* ---- Outputs ---- */
+    .output-file {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+    .output-file + .output-file {
+      margin-top: 1rem;
+    }
+    .output-file-header {
+      padding: 0.5rem 0.75rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      font-family: 'SF Mono', SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .output-file-header .dl-btn {
+      font-size: 0.7rem;
+      color: var(--accent);
+      text-decoration: none;
+      cursor: pointer;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      font-weight: 500;
+      opacity: 0.8;
+    }
+    .output-file-header .dl-btn:hover {
+      opacity: 1;
+      text-decoration: underline;
+    }
+    .output-file-content {
+      padding: 0.75rem;
+      overflow-x: auto;
+    }
+    .output-file-content pre {
+      font-size: 0.8125rem;
+      line-height: 1.5;
+      white-space: pre-wrap;
+      word-break: break-word;
+      font-family: 'SF Mono', SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace;
+    }
+    .output-file-content img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 4px;
+    }
+    .output-file-content iframe {
+      width: 100%;
+      height: 600px;
+      border: none;
+    }
+    .output-file-content table {
+      border-collapse: collapse;
+      font-size: 0.8125rem;
+      width: 100%;
+    }
+    .output-file-content table td,
+    .output-file-content table th {
+      border: 1px solid var(--border);
+      padding: 0.375rem 0.5rem;
+      text-align: left;
+    }
+    .output-file-content table th {
+      background: var(--bg);
+      font-weight: 600;
+    }
+    .output-file-content .download-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      color: var(--accent);
+      text-decoration: none;
+      font-size: 0.875rem;
+      cursor: pointer;
+    }
+    .output-file-content .download-link:hover {
+      background: var(--border);
+    }
+    .empty-state {
+      color: var(--text-muted);
+      font-style: italic;
+      padding: 2rem;
+      text-align: center;
+    }
+
+    /* ---- Feedback ---- */
+    .prev-feedback {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 0.625rem 0.75rem;
+      margin-top: 0.75rem;
+      font-size: 0.8125rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+    .prev-feedback-label {
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 0.25rem;
+      color: var(--text-muted);
+    }
+    .feedback-textarea {
+      width: 100%;
+      min-height: 100px;
+      padding: 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      font-family: inherit;
+      font-size: 0.9375rem;
+      line-height: 1.5;
+      resize: vertical;
+      color: var(--text);
+    }
+    .feedback-textarea:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+    .feedback-status {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 0.5rem;
+      min-height: 1.1em;
+    }
+
+    /* ---- Grades (collapsible) ---- */
+    .grades-toggle {
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      user-select: none;
+    }
+    .grades-toggle:hover {
+      color: var(--accent);
+    }
+    .grades-toggle .arrow {
+      margin-right: 0.5rem;
+      transition: transform 0.15s;
+      font-size: 0.75rem;
+    }
+    .grades-toggle .arrow.open {
+      transform: rotate(90deg);
+    }
+    .grades-content {
+      display: none;
+      margin-top: 0.75rem;
+    }
+    .grades-content.open {
+      display: block;
+    }
+    .grades-summary {
+      font-size: 0.875rem;
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .grade-badge {
+      display: inline-block;
+      padding: 0.125rem 0.5rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    .grade-pass { background: var(--green-bg); color: var(--green); }
+    .grade-fail { background: var(--red-bg); color: var(--red); }
+    .assertion-list {
+      list-style: none;
+    }
+    .assertion-item {
+      padding: 0.625rem 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.8125rem;
+    }
+    .assertion-item:last-child { border-bottom: none; }
+    .assertion-status {
+      font-weight: 600;
+      margin-right: 0.5rem;
+    }
+    .assertion-status.pass { color: var(--green); }
+    .assertion-status.fail { color: var(--red); }
+    .assertion-evidence {
+      color: var(--text-muted);
+      font-size: 0.75rem;
+      margin-top: 0.25rem;
+      padding-left: 1.5rem;
+    }
+
+    /* ---- View tabs ---- */
+    .view-tabs {
+      display: flex;
+      gap: 0;
+      padding: 0 2rem;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .view-tab {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.625rem 1.25rem;
+      font-size: 0.8125rem;
+      font-weight: 500;
+      cursor: pointer;
+      border: none;
+      background: none;
+      color: var(--text-muted);
+      border-bottom: 2px solid transparent;
+      transition: all 0.15s;
+    }
+    .view-tab:hover { color: var(--text); }
+    .view-tab.active {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+    }
+    .view-panel { display: none; }
+    .view-panel.active { display: flex; flex-direction: column; flex: 1; overflow: hidden; }
+
+    /* ---- Benchmark view ---- */
+    .benchmark-view {
+      padding: 1.5rem 2rem;
+      overflow-y: auto;
+      flex: 1;
+    }
+    .benchmark-table {
+      border-collapse: collapse;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      font-size: 0.8125rem;
+      width: 100%;
+      margin-bottom: 1.5rem;
+    }
+    .benchmark-table th, .benchmark-table td {
+      padding: 0.625rem 0.75rem;
+      text-align: left;
+      border: 1px solid var(--border);
+    }
+    .benchmark-table th {
+      font-family: 'Poppins', sans-serif;
+      background: var(--header-bg);
+      color: var(--header-text);
+      font-weight: 500;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .benchmark-table tr:hover { background: var(--bg); }
+    .benchmark-table tr.benchmark-row-with { background: rgba(33, 150, 243, 0.06); }
+    .benchmark-table tr.benchmark-row-without { background: rgba(255, 193, 7, 0.06); }
+    .benchmark-table tr.benchmark-row-with:hover { background: rgba(33, 150, 243, 0.12); }
+    .benchmark-table tr.benchmark-row-without:hover { background: rgba(255, 193, 7, 0.12); }
+    .benchmark-table tr.benchmark-row-avg { font-weight: 600; border-top: 2px solid var(--border); }
+    .benchmark-table tr.benchmark-row-avg.benchmark-row-with { background: rgba(33, 150, 243, 0.12); }
+    .benchmark-table tr.benchmark-row-avg.benchmark-row-without { background: rgba(255, 193, 7, 0.12); }
+    .benchmark-delta-positive { color: var(--green); font-weight: 600; }
+    .benchmark-delta-negative { color: var(--red); font-weight: 600; }
+    .benchmark-notes {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1rem;
+    }
+    .benchmark-notes h3 {
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.875rem;
+      margin-bottom: 0.75rem;
+    }
+    .benchmark-notes ul {
+      list-style: disc;
+      padding-left: 1.25rem;
+    }
+    .benchmark-notes li {
+      font-size: 0.8125rem;
+      line-height: 1.6;
+      margin-bottom: 0.375rem;
+    }
+    .benchmark-empty {
+      color: var(--text-muted);
+      font-style: italic;
+      text-align: center;
+      padding: 3rem;
+    }
+
+    /* ---- Navigation ---- */
+    .nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 2rem;
+      border-top: 1px solid var(--border);
+      background: var(--surface);
+      flex-shrink: 0;
+    }
+    .nav-btn {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.5rem 1.25rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      cursor: pointer;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--text);
+      transition: all 0.15s;
+    }
+    .nav-btn:hover:not(:disabled) {
+      background: var(--bg);
+      border-color: var(--text-muted);
+    }
+    .nav-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+    .done-btn {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.5rem 1.5rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      color: var(--text);
+      cursor: pointer;
+      font-size: 0.875rem;
+      font-weight: 500;
+      transition: all 0.15s;
+    }
+    .done-btn:hover {
+      background: var(--bg);
+      border-color: var(--text-muted);
+    }
+    .done-btn.ready {
+      border: none;
+      background: var(--accent);
+      color: white;
+      font-weight: 600;
+    }
+    .done-btn.ready:hover {
+      background: var(--accent-hover);
+    }
+    /* ---- Done overlay ---- */
+    .done-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 100;
+      justify-content: center;
+      align-items: center;
+    }
+    .done-overlay.visible {
+      display: flex;
+    }
+    .done-card {
+      background: var(--surface);
+      border-radius: 12px;
+      padding: 2rem 3rem;
+      text-align: center;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      max-width: 500px;
+    }
+    .done-card h2 {
+      font-size: 1.5rem;
+      margin-bottom: 0.5rem;
+    }
+    .done-card p {
+      color: var(--text-muted);
+      margin-bottom: 1.5rem;
+      line-height: 1.5;
+    }
+    .done-card .btn-row {
+      display: flex;
+      gap: 0.5rem;
+      justify-content: center;
+    }
+    .done-card button {
+      padding: 0.5rem 1.25rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      cursor: pointer;
+      font-size: 0.875rem;
+    }
+    .done-card button:hover {
+      background: var(--bg);
+    }
+    /* ---- Toast ---- */
+    .toast {
+      position: fixed;
+      bottom: 5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--header-bg);
+      color: var(--header-text);
+      padding: 0.625rem 1.25rem;
+      border-radius: var(--radius);
+      font-size: 0.875rem;
+      opacity: 0;
+      transition: opacity 0.3s;
+      pointer-events: none;
+      z-index: 200;
+    }
+    .toast.visible {
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+  <div id="app" style="height:100vh; display:flex; flex-direction:column;">
+    <div class="header">
+      <div>
+        <h1>Eval Review: <span id="skill-name"></span></h1>
+        <div class="instructions">Review each output and leave feedback below. Navigate with arrow keys or buttons. When done, copy feedback and paste into Claude Code.</div>
+      </div>
+      <div class="progress" id="progress"></div>
+    </div>
+
+    <!-- View tabs (only shown when benchmark data exists) -->
+    <div class="view-tabs" id="view-tabs" style="display:none;">
+      <button class="view-tab active" onclick="switchView('outputs')">Outputs</button>
+      <button class="view-tab" onclick="switchView('benchmark')">Benchmark</button>
+    </div>
+
+    <!-- Outputs panel (qualitative review) -->
+    <div class="view-panel active" id="panel-outputs">
+    <div class="main">
+      <!-- Prompt -->
+      <div class="section">
+        <div class="section-header">Prompt <span class="config-badge" id="config-badge" style="display:none;"></span></div>
+        <div class="section-body">
+          <div class="prompt-text" id="prompt-text"></div>
+        </div>
+      </div>
+
+      <!-- Outputs -->
+      <div class="section">
+        <div class="section-header">Output</div>
+        <div class="section-body" id="outputs-body">
+          <div class="empty-state">No output files found</div>
+        </div>
+      </div>
+
+      <!-- Previous Output (collapsible) -->
+      <div class="section" id="prev-outputs-section" style="display:none;">
+        <div class="section-header">
+          <div class="grades-toggle" onclick="togglePrevOutputs()">
+            <span class="arrow" id="prev-outputs-arrow">&#9654;</span>
+            Previous Output
+          </div>
+        </div>
+        <div class="grades-content" id="prev-outputs-content"></div>
+      </div>
+
+      <!-- Grades (collapsible) -->
+      <div class="section" id="grades-section" style="display:none;">
+        <div class="section-header">
+          <div class="grades-toggle" onclick="toggleGrades()">
+            <span class="arrow" id="grades-arrow">&#9654;</span>
+            Formal Grades
+          </div>
+        </div>
+        <div class="grades-content" id="grades-content"></div>
+      </div>
+
+      <!-- Feedback -->
+      <div class="section">
+        <div class="section-header">Your Feedback</div>
+        <div class="section-body">
+          <textarea
+            class="feedback-textarea"
+            id="feedback"
+            placeholder="What do you think of this output? Any issues, suggestions, or things that look great?"
+          ></textarea>
+          <div class="feedback-status" id="feedback-status"></div>
+          <div class="prev-feedback" id="prev-feedback" style="display:none;">
+            <div class="prev-feedback-label">Previous feedback</div>
+            <div id="prev-feedback-text"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="nav" id="outputs-nav">
+      <button class="nav-btn" id="prev-btn" onclick="navigate(-1)">&#8592; Previous</button>
+      <button class="done-btn" id="done-btn" onclick="showDoneDialog()">Submit All Reviews</button>
+      <button class="nav-btn" id="next-btn" onclick="navigate(1)">Next &#8594;</button>
+    </div>
+    </div><!-- end panel-outputs -->
+
+    <!-- Benchmark panel (quantitative stats) -->
+    <div class="view-panel" id="panel-benchmark">
+      <div class="benchmark-view" id="benchmark-content">
+        <div class="benchmark-empty">No benchmark data available. Run a benchmark to see quantitative results here.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Done overlay -->
+  <div class="done-overlay" id="done-overlay">
+    <div class="done-card">
+      <h2>Review Complete</h2>
+      <p>Your feedback has been saved. Go back to your Claude Code session and tell Claude you're done reviewing.</p>
+      <div class="btn-row">
+        <button onclick="closeDoneDialog()">OK</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
+
+  <script>
+    // ---- Embedded data (injected by generate_review.py) ----
+    const EMBEDDED_DATA = {"skill_name": "ai-code-reviewer", "runs": [{"id": "eval-1-sql-injection-with_skill", "prompt": "Hey can you review this PR diff for me? We're adding a new user login endpoint to our Flask API. [Flask auth PR with SQL injection, MD5 hashing, no input validation]", "eval_id": 1, "outputs": [{"name": "review.md", "type": "text", "content": "# PR Review: New User Login Endpoint (`api/auth.py`)\n\n> Note: No PR description was provided. This makes it harder to understand the intended scope, rollout plan, or any known trade-offs. Please add a description before merging \u2014 this is an authentication flow and context matters.\n\n---\n\n## Inline Comments\n\n---\n\n**File: api/auth.py  Line: 17**\n**[SECURITY][error] SQL injection via unsanitized `username` and `password` in login query**\n\nThe `username` value is interpolated directly into a raw SQL string:\n\n```python\nquery = f\"SELECT * FROM users WHERE username = '{username}' AND password = '{hashlib.md5(password.encode()).hexdigest()}'\"\ncursor.execute(query)\n```\n\nAn attacker can pass `' OR '1'='1' --` as the username to bypass authentication entirely and log in as any user. This is a textbook SQL injection vulnerability in an auth endpoint \u2014 this is as serious as it gets.\n\nFix: Use parameterized queries:\n```python\nquery = \"SELECT * FROM users WHERE username = ? AND password = ?\"\ncursor.execute(query, (username, hashlib.md5(password.encode()).hexdigest()))\n```\n(Also see the MD5 issue below \u2014 you'll want to fix both together.)\n\n---\n\n**File: api/auth.py  Line: 37**\n**[SECURITY][error] SQL injection via unsanitized `username`, `password`, and `email` in register query**\n\nSame problem in the registration route:\n\n```python\ncursor.execute(f\"INSERT INTO users (username, password, email) VALUES ('{username}', '{hashed}', '{email}')\")\n```\n\nAn attacker can inject arbitrary SQL through any of the three fields. For example, passing `', '', ''); DROP TABLE users; --` as the email would drop the users table.\n\nFix: Use parameterized queries:\n```python\ncursor.execute(\n    \"INSERT INTO users (username, password, email) VALUES (?, ?, ?)\",\n    (username, hashed, email)\n)\n```\n\n---\n\n**File: api/auth.py  Lines: 17, 35**\n**[SECURITY][error] MD5 used for password hashing \u2014 cryptographically broken**\n\nMD5 is not a password hashing algorithm. It is:\n- Extremely fast, making brute-force and rainbow table attacks trivial\n- Not salted here, meaning identical passwords produce identical hashes (enabling precomputed attacks)\n- Considered broken for cryptographic use since the early 2000s\n\nA database breach exposes every user's real password in seconds with GPU-based cracking tools.\n\nFix: Use `bcrypt`, `argon2-cffi`, or at minimum `hashlib.scrypt` / `hashlib.pbkdf2_hmac` with a random salt:\n```python\nimport bcrypt\n\n# Hashing (registration)\nhashed = bcrypt.hashpw(password.encode(), bcrypt.gensalt())\n\n# Verification (login)\nif bcrypt.checkpw(password.encode(), stored_hash):\n    ...\n```\n\n---\n\n**File: api/auth.py  Lines: 12-13**\n**[BUG][error] No input validation \u2014 `request.json` can be `None`, crashing the server**\n\nIf the request body is not valid JSON (or the `Content-Type` header is wrong), `request.json` returns `None`, and `.get('username')` will throw `AttributeError: 'NoneType' object has no attribute 'get'`. The same issue exists in `register()`.\n\nAdditionally, if `username` or `password` are missing from the JSON body, they will be `None`, and `password.encode()` will throw `AttributeError: 'NoneType' object has no attribute 'encode'` \u2014 a crash that produces a 500 error and leaks a stack trace.\n\nFix: Validate inputs explicitly before use:\n```python\ndata = request.get_json(silent=True)\nif not data:\n    return jsonify({'status': 'error', 'message': 'Invalid request body'}), 400\n\nusername = data.get('username')\npassword = data.get('password')\n\nif not username or not password:\n    return jsonify({'status': 'error', 'message': 'Username and password are required'}), 400\n```\n\n---\n\n**File: api/auth.py  Line: 23**\n**[SECURITY][warning] Login response leaks `user_id` \u2014 potential IDOR surface**\n\nReturning `user[0]` (the raw database primary key) in the login response exposes internal IDs. If any downstream endpoint uses this ID without proper authorization checks, it enables Insecure Direct Object Reference (IDOR) attacks.\n\nFix: Return a signed session token or JWT instead of a raw database ID. If you must return an identifier, use an opaque token that cannot be guessed or enumerated.\n\n---\n\n**File: api/auth.py  Lines: 14-15, 32-33**\n**[BUG][warning] Database connections not closed on error paths**\n\nIf an exception is thrown between `conn = sqlite3.connect(...)` and `conn.close()`, the connection leaks. Under SQLite this is less immediately harmful than in connection-pool databases, but it is still incorrect resource management.\n\nFix: Use a context manager:\n```python\nwith sqlite3.connect(DB_PATH) as conn:\n    cursor = conn.cursor()\n    cursor.execute(...)\n    user = cursor.fetchone()\n# connection is closed automatically\n```\n\n---\n\n**File: api/auth.py  Lines: 26-27**\n**[SECURITY][warning] Authentication timing is not constant \u2014 timing oracle on username existence**\n\nThe `SELECT` query short-circuits: if the username does not exist, the DB returns no rows instantly. If it does exist but the password is wrong, the query may take slightly longer. This timing difference can allow an attacker to enumerate valid usernames.\n\nFix: Once you switch to bcrypt (see above), always run `bcrypt.checkpw` regardless of whether the user was found, to keep the response time constant. Also, keep the error message generic (which you already do \u2014 good).\n\n---\n\n**File: api/auth.py  Lines: 38-40**\n**[BUG][warning] `register()` does not handle duplicate usernames**\n\nIf a username already exists and the column has a `UNIQUE` constraint, `cursor.execute(...)` will raise `sqlite3.IntegrityError`, which is unhandled and will return a 500. If there is no constraint, duplicate accounts are silently created.\n\nFix: Catch `sqlite3.IntegrityError` and return a 409 Conflict response:\n```python\ntry:\n    cursor.execute(...)\n    conn.commit()\nexcept sqlite3.IntegrityError:\n    return jsonify({'status': 'error', 'message': 'Username already exists'}), 409\n```\n\n---\n\n**File: api/auth.py  Lines: 7**\n**[SECURITY][warning] Hardcoded database path**\n\n`DB_PATH = '/app/users.db'` is a hardcoded absolute path. This is not a secret, but hard-coding infrastructure paths makes the app environment-specific and fragile.\n\nFix: Read from an environment variable with a sensible default:\n```python\nimport os\nDB_PATH = os.environ.get('DB_PATH', '/app/users.db')\n```\n\n---\n\n**File: api/auth.py  Lines: 41-42**\n**[TEST COVERAGE][info] No tests present for any of the new code paths**\n\nThere are no tests for the `/login` or `/register` endpoints. Given this is an authentication flow \u2014 the security boundary for the entire application \u2014 tests are especially important. At minimum, cover:\n- Successful login\n- Login with wrong password\n- Login with non-existent username\n- Registration with a new user\n- Registration with a duplicate username\n- Missing/malformed request body for both endpoints\n\n---\n\n## Code Review Summary\n\n**Overall: REQUEST CHANGES**\n\n| Category       | Errors | Warnings | Info |\n|----------------|--------|----------|------|\n| Bugs           | 1      | 2        | 0    |\n| Security       | 3      | 3        | 0    |\n| Performance    | 0      | 0        | 0    |\n| Code Quality   | 0      | 1        | 0    |\n| Test Coverage  | 0      | 0        | 1    |\n| **Total**      | **4**  | **6**    | **1**|\n\n---\n\n### Critical Issues (must fix before merge)\n\n1. **SQL injection in `/login`** \u2014 `api/auth.py:17` \u2014 raw f-string interpolation into SQL; trivially exploitable to bypass authentication\n2. **SQL injection in `/register`** \u2014 `api/auth.py:37` \u2014 same pattern; can destroy data or exfiltrate records\n3. **MD5 password hashing** \u2014 `api/auth.py:17,35` \u2014 passwords are effectively stored in plaintext equivalent; any DB breach exposes all user credentials\n4. **No input validation / None crash** \u2014 `api/auth.py:12-13` \u2014 malformed requests crash the server with a 500 and a stack trace\n\n### Recommended Fixes (should address)\n\n5. **Timing oracle on username enumeration** \u2014 `api/auth.py:26-27` \u2014 use constant-time comparison after switching to bcrypt\n6. **Unhandled duplicate username on register** \u2014 `api/auth.py:38-40` \u2014 `sqlite3.IntegrityError` produces a 500 instead of a 409\n7. **Unclosed DB connections on exceptions** \u2014 `api/auth.py:14-15,32-33` \u2014 use `with` context manager\n8. **`user_id` leaked in login response** \u2014 `api/auth.py:23` \u2014 raw DB primary key in response is an IDOR risk\n9. **Hardcoded `DB_PATH`** \u2014 `api/auth.py:7` \u2014 should come from environment config\n\n### Suggestions (optional improvements)\n\n10. **Add tests** \u2014 no test coverage for either endpoint; critical for an auth flow\n\n---\n\n### What's Good\n\n- The error message on failed login (`\"Invalid credentials\"`) is correctly generic \u2014 it does not reveal whether the username or password was wrong. This is the right call for preventing username enumeration via the response body.\n- The endpoint structure (separate `/login` and `/register`) is clean and correctly uses `POST` for both.\n- `conn.close()` is called on the happy path, showing awareness of connection management \u2014 just needs to be made robust against exceptions too.\n\n---\n\n**Bottom line:** Do not merge this. There are four `error`-severity issues, two of which (SQL injection and MD5 passwords) are critical security vulnerabilities that would be exploitable immediately in production. Switch to parameterized queries and a proper password hashing library (bcrypt or argon2) as the minimum bar before this ships.\n"}], "grading": {"eval_id": 1, "configuration": "with_skill", "expectations": [{"text": "Review identifies SQL injection vulnerability in the login or register endpoint", "passed": true, "evidence": "Line 12: '[SECURITY][error] SQL injection via unsanitized username and password in login query' \u2014 explicitly calls out f-string interpolation into SQL, provides exploit example, recommends parameterized queries"}, {"text": "Review flags MD5 as insecure for password storage and suggests bcrypt/argon2/scrypt", "passed": true, "evidence": "Lines 53-73: '[SECURITY][error] MD5 used for password hashing \u2014 cryptographically broken' \u2014 explains no salt, rainbow tables, suggests bcrypt with code example"}, {"text": "Security issues are marked as error severity (not just warnings or info)", "passed": true, "evidence": "Both SQL injection and MD5 findings explicitly tagged [SECURITY][error]"}, {"text": "Overall verdict is REQUEST CHANGES given error-severity security issues", "passed": true, "evidence": "Line 177: '**Overall: REQUEST CHANGES**'"}, {"text": "Review includes a structured summary with category breakdown (table or list)", "passed": true, "evidence": "Lines 179-186: Markdown table with Bugs/Security/Performance/Code Quality/Test Coverage rows with Error/Warning/Info columns"}], "pass_count": 5, "total_count": 5, "pass_rate": 1.0}}, {"id": "eval-1-sql-injection-without_skill", "prompt": "Hey can you review this PR diff for me? We're adding a new user login endpoint to our Flask API. [Flask auth PR with SQL injection, MD5 hashing, no input validation]", "eval_id": 1, "outputs": [{"name": "review.md", "type": "text", "content": "# Code Review: New User Login Endpoint (`api/auth.py`)\n\n## Summary\n\nThis PR adds `/login` and `/register` endpoints to the Flask API. While the basic structure is reasonable, the code has **critical security vulnerabilities** that must be fixed before merging. There are also secondary issues around error handling and code quality.\n\n---\n\n## Critical Issues\n\n### 1. SQL Injection (Severity: Critical)\n\nBoth endpoints construct SQL queries using f-strings with unsanitized user input:\n\n```python\n# login()\nquery = f\"SELECT * FROM users WHERE username = '{username}' AND password = '{hashlib.md5(password.encode()).hexdigest()}'\"\ncursor.execute(query)\n\n# register()\ncursor.execute(f\"INSERT INTO users (username, password, email) VALUES ('{username}', '{hashed}', '{email}')\")\n```\n\nAn attacker can inject arbitrary SQL by providing a username like `' OR '1'='1' --`, which would bypass authentication entirely or corrupt/destroy the database.\n\n**Fix:** Use parameterized queries (also called prepared statements):\n\n```python\n# login\ncursor.execute(\"SELECT * FROM users WHERE username = ? AND password = ?\", (username, hashed_password))\n\n# register\ncursor.execute(\"INSERT INTO users (username, password, email) VALUES (?, ?, ?)\", (username, hashed, email))\n```\n\n---\n\n### 2. Weak Password Hashing \u2014 MD5 (Severity: Critical)\n\n```python\nhashlib.md5(password.encode()).hexdigest()\n```\n\nMD5 is cryptographically broken for password storage. It is extremely fast, has no salt, and massive precomputed rainbow tables exist for it. An attacker who obtains the database can crack most passwords trivially.\n\n**Fix:** Use `bcrypt`, `argon2`, or at minimum `hashlib.scrypt` / `hashlib.pbkdf2_hmac` with a per-user salt:\n\n```python\nimport bcrypt\n\n# Hashing\nhashed = bcrypt.hashpw(password.encode(), bcrypt.gensalt())\n\n# Verification\nbcrypt.checkpw(password.encode(), stored_hash)\n```\n\n---\n\n## High-Severity Issues\n\n### 3. No Input Validation (Severity: High)\n\nNeither endpoint validates that `username`, `password`, or `email` are present, non-empty, or meet any format requirements. If any field is `None` (e.g., the client sends a malformed JSON body or omits a field), the code will raise an unhandled `AttributeError` (`None.encode()`) or produce broken SQL even after parameterization is applied.\n\n**Fix:** Validate all required fields before processing:\n\n```python\nif not username or not password:\n    return jsonify({'status': 'error', 'message': 'Missing required fields'}), 400\n```\n\n---\n\n### 4. No Authentication Token Returned on Login (Severity: High)\n\nThe `/login` endpoint returns only `user_id` on success:\n\n```python\nreturn jsonify({'status': 'ok', 'user_id': user[0]})\n```\n\nThere is no session, cookie, or token issued. This means the client has no secure way to prove identity on subsequent requests. The `user_id` alone in a response body provides no authentication mechanism.\n\n**Fix:** Issue a signed token (e.g., JWT via `flask-jwt-extended`) or use Flask's server-side session management.\n\n---\n\n### 5. No Error Handling for Database Operations (Severity: High)\n\nDatabase connections and queries are not wrapped in try/except blocks. Any database error (connection failure, constraint violation on duplicate username, etc.) will result in an unhandled exception and a 500 response that may leak stack trace details to the client.\n\n**Fix:** Wrap database operations in try/except and return appropriate error responses:\n\n```python\ntry:\n    conn = sqlite3.connect(DB_PATH)\n    # ... operations ...\nexcept sqlite3.IntegrityError:\n    return jsonify({'status': 'error', 'message': 'Username already exists'}), 409\nexcept sqlite3.Error as e:\n    return jsonify({'status': 'error', 'message': 'Database error'}), 500\nfinally:\n    conn.close()\n```\n\n---\n\n## Medium-Severity Issues\n\n### 6. Database Connection Not Closed on Exception (Severity: Medium)\n\nThe `conn.close()` call at the end of each function will not execute if an exception is raised beforehand, potentially leaking database connections.\n\n**Fix:** Use a context manager or `try/finally` to ensure the connection is always closed.\n\n---\n\n### 7. Hardcoded Database Path (Severity: Medium)\n\n```python\nDB_PATH = '/app/users.db'\n```\n\nThis hardcoded absolute path makes the code inflexible across environments (development, staging, production) and requires code changes to reconfigure.\n\n**Fix:** Read the path from an environment variable or application configuration:\n\n```python\nimport os\nDB_PATH = os.environ.get('DB_PATH', '/app/users.db')\n```\n\n---\n\n### 8. `register` Returns 200 on Success Instead of 201 (Severity: Low)\n\nSuccessful resource creation should return HTTP 201 Created, not the default 200 OK.\n\n```python\nreturn jsonify({'status': 'registered'}), 201\n```\n\n---\n\n## Additional Observations\n\n- **No PR description:** The lack of a description makes it hard to understand intent, testing done, or scope of the change. Please add one.\n- **No rate limiting:** Authentication endpoints are prime targets for brute-force attacks. Consider adding rate limiting (e.g., via `flask-limiter`).\n- **Timing side-channel:** The login response time may differ slightly between \"user not found\" and \"wrong password\" cases. Using a constant-time comparison (built into `bcrypt.checkpw`) mitigates this.\n- **No logging:** Failed login attempts should be logged for security monitoring purposes.\n\n---\n\n## Verdict\n\n**Do not merge in current state.** The SQL injection and MD5 password hashing issues alone are sufficient grounds for rejection \u2014 both are well-known, easily exploitable vulnerabilities. These must be resolved and the PR re-reviewed before merging.\n"}], "grading": {"eval_id": 1, "configuration": "without_skill", "expectations": [{"text": "Review identifies SQL injection vulnerability in the login or register endpoint", "passed": true, "evidence": "'SQL Injection (Severity: Critical)' section \u2014 explains f-string interpolation, gives exploit example, recommends parameterized queries"}, {"text": "Review flags MD5 as insecure for password storage and suggests bcrypt/argon2/scrypt", "passed": true, "evidence": "'Weak Password Hashing \u2014 MD5 (Severity: Critical)' \u2014 explains no salt, rainbow tables, recommends bcrypt/argon2 with code example"}, {"text": "Security issues are marked as error severity (not just warnings or info)", "passed": true, "evidence": "Both issues labeled 'Severity: Critical' under the Critical Issues section"}, {"text": "Overall verdict is REQUEST CHANGES given error-severity security issues", "passed": true, "evidence": "'**Verdict: Do not merge in current state.**' \u2014 strong rejection language"}, {"text": "Review includes a structured summary with category breakdown (table or list)", "passed": false, "evidence": "Uses prose sections (Critical Issues, High-Severity, Medium) but no structured category breakdown table with counts"}], "pass_count": 4, "total_count": 5, "pass_rate": 0.8}}, {"id": "eval-2-n-plus-1-with_skill", "prompt": "Node.js orders API PR: fetches all orders for a user in a loop (N+1), missing auth check (IDOR), floating point for currency", "eval_id": 2, "outputs": [{"name": "review.md", "type": "text", "content": "# PR Code Review: User Orders Endpoint\n\n**PR Description:** Adds endpoint to get user orders with total spend for the account dashboard.\n\n**File Reviewed:** `src/routes/orders.js`\n\n---\n\n## Inline Findings\n\n---\n\n**File: src/routes/orders.js  Line: 10**\n**[SECURITY][error] No authentication or authorization check \u2014 any user can fetch any user's orders**\n\nThe endpoint accepts `userId` from the URL path and queries the database with it directly, with no check that the requesting user is actually allowed to see that user's data. An authenticated user (or an unauthenticated caller if auth middleware is not enforced globally) can simply change the `userId` in the URL to retrieve every order belonging to any other account. This is a classic Insecure Direct Object Reference (IDOR) vulnerability.\n\nFix: Before executing the query, verify that the authenticated session/token corresponds to the requested `userId` (or that the caller has an admin role). Example:\n\n```js\nif (req.user.id !== userId && !req.user.isAdmin) {\n  return res.status(403).json({ error: 'Forbidden' });\n}\n```\n\n---\n\n**File: src/routes/orders.js  Lines: 9\u201328**\n**[BUGS][error] No try/catch \u2014 any database error crashes the request with an unhandled promise rejection**\n\nEvery `await db.query(...)` call can throw (connection failure, query error, etc.). There is no `try/catch` wrapping the handler, so a DB error will result in an unhandled promise rejection and the request will hang or crash rather than returning an appropriate error response.\n\nFix: Wrap the entire handler body in a try/catch:\n\n```js\nrouter.get('/users/:userId/orders', async (req, res) => {\n  try {\n    // ... existing logic ...\n  } catch (err) {\n    console.error('Failed to fetch orders for user', userId, err);\n    res.status(500).json({ error: 'Internal server error' });\n  }\n});\n```\n\n---\n\n**File: src/routes/orders.js  Lines: 13\u201317**\n**[PERFORMANCE][error] N+1 query pattern \u2014 one DB query is issued per order**\n\nThe code fetches all orders in a single query, then executes a separate `SELECT * FROM order_items WHERE order_id = $1` query inside a `for` loop for every order. If a user has 100 orders, this makes 101 round-trips to the database. At scale this will cause serious latency and connection pool exhaustion.\n\nFix: Replace the loop with a single JOIN query that retrieves orders and their items together, or use an `IN` clause to batch the item lookups:\n\n```sql\n-- Option A: single JOIN\nSELECT o.*, oi.id AS item_id, oi.price, oi.quantity, oi.product_id\nFROM orders o\nLEFT JOIN order_items oi ON oi.order_id = o.id\nWHERE o.user_id = $1;\n\n-- Option B: two queries \u2014 one for orders, one batch fetch for all items\nSELECT * FROM order_items WHERE order_id = ANY($1::int[]);\n```\n\nEither approach reduces the round-trips to 1\u20132 regardless of how many orders exist.\n\n---\n\n**File: src/routes/orders.js  Lines: 10**\n**[SECURITY][warning] `userId` from URL params is not validated before being used in a query**\n\nAlthough a parameterized query (`$1`) is used (which prevents SQL injection), `userId` is not validated to be a non-empty string, a valid integer, or within an expected range. Passing a malformed value (e.g., an empty string, a very large number, or a specially crafted value) could trigger unexpected database behavior or expose internal error messages.\n\nFix: Validate the parameter early:\n\n```js\nconst userId = parseInt(req.params.userId, 10);\nif (!Number.isInteger(userId) || userId <= 0) {\n  return res.status(400).json({ error: 'Invalid userId' });\n}\n```\n\n---\n\n**File: src/routes/orders.js  Lines: 20\u201325**\n**[BUGS][warning] Floating-point arithmetic used for currency \u2014 total spend will have rounding errors**\n\n`item.price * item.quantity` uses JavaScript's native floating-point numbers. For monetary values this is unreliable: `0.1 + 0.2 === 0.30000000000000004`. Displaying or storing a `totalSpend` computed this way will produce incorrect values (e.g., $99.999999 instead of $100.00).\n\nFix: Either store prices as integers (cents) and divide only at the presentation layer, or use a library like `decimal.js` / `big.js` for all monetary arithmetic:\n\n```js\nconst Decimal = require('decimal.js');\nlet total = new Decimal(0);\nfor (const order of ordersWithItems) {\n  for (const item of order.items) {\n    total = total.plus(new Decimal(item.price).times(item.quantity));\n  }\n}\nres.json({ orders: ordersWithItems, totalSpend: total.toFixed(2) });\n```\n\n---\n\n**File: src/routes/orders.js  Lines: 9\u201328**\n**[PERFORMANCE][warning] No pagination \u2014 endpoint returns all orders for a user in a single response**\n\nThe query `SELECT * FROM orders WHERE user_id = $1` has no `LIMIT`/`OFFSET` or cursor-based pagination. A user with thousands of orders will cause a very large result set to be loaded entirely into memory, serialized, and sent over the wire in a single response. This will cause memory pressure and slow response times.\n\nFix: Add pagination parameters:\n\n```js\nconst page = parseInt(req.query.page, 10) || 1;\nconst pageSize = Math.min(parseInt(req.query.pageSize, 10) || 20, 100);\nconst offset = (page - 1) * pageSize;\n\nconst orders = await db.query(\n  'SELECT * FROM orders WHERE user_id = $1 ORDER BY created_at DESC LIMIT $2 OFFSET $3',\n  [userId, pageSize, offset]\n);\n```\n\n---\n\n**File: src/routes/orders.js  Lines: 9\u201328**\n**[TEST COVERAGE][warning] No tests provided for the new endpoint**\n\nThe PR adds a meaningful new endpoint with multiple logic paths (empty orders, orders with no items, monetary calculation, DB error) and no tests are included. Edge cases that should be covered include:\n\n- User with no orders \u2192 `{ orders: [], totalSpend: 0 }`\n- Order with zero-quantity items\n- DB failure \u2192 500 response (once error handling is added)\n- Unauthorized access attempt (once auth is added)\n- Correct total spend calculation with decimal prices\n\n---\n\n**File: src/routes/orders.js  Lines: 9\u201310**\n**[CODE QUALITY][info] `SELECT *` used in both queries \u2014 prefer explicit column lists**\n\nUsing `SELECT *` couples the API response schema directly to the database table schema. If a column is added to `orders` or `order_items` (e.g., an internal flag or sensitive field), it will automatically be exposed in the API response. Explicitly listing needed columns makes the contract clear and prevents accidental data leakage.\n\nFix:\n\n```sql\nSELECT id, user_id, status, created_at FROM orders WHERE user_id = $1\nSELECT id, order_id, product_id, price, quantity FROM order_items WHERE order_id = $1\n```\n\n---\n\n## Code Review Summary\n\n**Overall: REQUEST CHANGES**\n\n| Category        | Errors | Warnings | Info |\n|-----------------|--------|----------|------|\n| Bugs            | 1      | 1        | 0    |\n| Security        | 1      | 1        | 0    |\n| Performance     | 1      | 1        | 0    |\n| Code Quality    | 0      | 0        | 1    |\n| Test Coverage   | 0      | 1        | 0    |\n| **Total**       | **3**  | **4**    | **1**|\n\n---\n\n### Critical Issues (must fix before merge)\n\n1. **[SECURITY] Missing authorization check** (`src/routes/orders.js` line 10) \u2014 any caller can read any user's complete order history. This is an IDOR vulnerability that directly violates user data privacy.\n2. **[BUGS] No error handling** (`src/routes/orders.js` lines 9\u201328) \u2014 unhandled promise rejections on any DB failure; the server will crash or hang instead of returning a 500.\n3. **[PERFORMANCE] N+1 query pattern** (`src/routes/orders.js` lines 13\u201317) \u2014 one DB query per order row will not scale and will cause latency and connection pool exhaustion under real load.\n\n---\n\n### Recommended Fixes (should address)\n\n- **[SECURITY]** Validate and sanitize `userId` before use (line 10), even though parameterized queries prevent SQL injection.\n- **[BUGS]** Switch to integer cents or a decimal library for monetary arithmetic (lines 20\u201325) to avoid floating-point rounding errors in `totalSpend`.\n- **[PERFORMANCE]** Add pagination to the orders query (line 10) to prevent unbounded response sizes.\n- **[TEST COVERAGE]** Add unit/integration tests covering happy path, empty results, DB errors, and the authorization check.\n\n---\n\n### Suggestions (optional improvements)\n\n- **[CODE QUALITY]** Replace `SELECT *` with explicit column lists in both queries to make the API contract explicit and prevent accidental exposure of future columns.\n\n---\n\n### What's Good\n\n- **Parameterized queries are used correctly.** Both `db.query` calls pass user input as a bound parameter (`$1`), which correctly prevents SQL injection. This is the right pattern.\n- **The response shape is sensible.** Returning `{ orders, totalSpend }` in a single response is a reasonable design for a dashboard use-case and avoids requiring a second round-trip from the client.\n"}], "grading": {"eval_id": 2, "configuration": "with_skill", "expectations": [{"text": "Review identifies the N+1 query pattern in the order_items fetch loop", "passed": true, "evidence": "Lines 48-66: '[PERFORMANCE][error] N+1 query pattern \u2014 one DB query is issued per order' \u2014 references lines 13-17, explains 100 orders = 101 queries, provides JOIN and batch fix"}, {"text": "Review flags that any user can access any other user's orders (IDOR / broken access control)", "passed": true, "evidence": "Lines 13-24: '[SECURITY][error] No authentication or authorization check \u2014 any user can fetch any user's orders' \u2014 explicitly names IDOR, line 10"}, {"text": "Review flags floating point arithmetic for monetary values", "passed": true, "evidence": "Lines 86-103: '[BUGS][warning] Floating-point arithmetic used for currency \u2014 total spend will have rounding errors' \u2014 explains IEEE 754, recommends integer cents or decimal.js"}, {"text": "Findings reference specific line numbers from the diff", "passed": true, "evidence": "Multiple findings explicitly call out 'Line: 10', 'Lines: 13\u201317', 'Lines: 20\u201325', 'Lines: 9\u201328'"}], "pass_count": 4, "total_count": 4, "pass_rate": 1.0}}, {"id": "eval-2-n-plus-1-without_skill", "prompt": "Node.js orders API PR: fetches all orders for a user in a loop (N+1), missing auth check (IDOR), floating point for currency", "eval_id": 2, "outputs": [{"name": "review.md", "type": "text", "content": "# Code Review: User Orders Endpoint\n\n**PR:** Adds endpoint to get user orders with total spend for the account dashboard.\n**File:** `src/routes/orders.js`\n\n---\n\n## Summary\n\nThe PR adds a `GET /users/:userId/orders` endpoint that fetches all orders for a user, retrieves their line items, and calculates a total spend. The implementation is functional but has several significant issues that should be addressed before merging.\n\n---\n\n## Issues\n\n### Critical\n\n#### 1. N+1 Query Problem\n\n**Lines 14\u201318** \u2014 The most significant performance issue in this PR. For every order returned by the first query, a separate database query is fired to fetch its line items. If a user has 100 orders, this results in 101 database round-trips.\n\n```js\nfor (const order of orders.rows) {\n  const items = await db.query('SELECT * FROM order_items WHERE order_id = $1', [order.id]);\n  ordersWithItems.push({ ...order, items: items.rows });\n}\n```\n\n**Fix:** Use a single JOIN query (or a single `WHERE order_id = ANY(...)` query) to fetch all line items in one round-trip, then group them in application code.\n\n```js\n// Fetch orders and items in two queries instead of N+1\nconst orders = await db.query('SELECT * FROM orders WHERE user_id = $1', [userId]);\nconst orderIds = orders.rows.map(o => o.id);\n\nconst items = await db.query(\n  'SELECT * FROM order_items WHERE order_id = ANY($1::int[])',\n  [orderIds]\n);\n\n// Group items by order_id\nconst itemsByOrderId = {};\nfor (const item of items.rows) {\n  if (!itemsByOrderId[item.order_id]) itemsByOrderId[item.order_id] = [];\n  itemsByOrderId[item.order_id].push(item);\n}\n\nconst ordersWithItems = orders.rows.map(order => ({\n  ...order,\n  items: itemsByOrderId[order.id] || [],\n}));\n```\n\nAlternatively, a single JOIN query can do both in one round-trip.\n\n---\n\n#### 2. No Error Handling\n\nThere is no `try/catch` block around any of the `await db.query(...)` calls. If the database is unreachable or a query fails, the promise rejection will be unhandled, and the server will likely crash or hang the request without ever sending a response.\n\n```js\n// Current \u2014 no error handling\nconst orders = await db.query('SELECT * FROM orders WHERE user_id = $1', [userId]);\n```\n\n**Fix:** Wrap the entire handler body in a `try/catch` and return an appropriate error response.\n\n```js\nrouter.get('/users/:userId/orders', async (req, res) => {\n  try {\n    // ... logic ...\n    res.json({ orders: ordersWithItems, totalSpend: total });\n  } catch (err) {\n    console.error('Failed to fetch orders for user', userId, err);\n    res.status(500).json({ error: 'Internal server error' });\n  }\n});\n```\n\n---\n\n#### 3. Missing Input Validation / Authorization\n\n`userId` is taken directly from `req.params` and interpolated into a query parameter without any validation or authorization check. Two problems:\n\n- **Type/format validation:** No check that `userId` is a valid integer (or UUID, depending on your schema). A malformed value could cause a database error that leaks internal details.\n- **Authorization:** There is no check that the authenticated user is allowed to view the requested `userId`'s orders. Any authenticated (or even unauthenticated, if the route has no auth middleware) caller can enumerate any user's order history and total spend by changing the `userId` in the URL.\n\n**Fix:**\n1. Validate that `userId` matches the expected format before querying.\n2. Confirm the requesting user's identity (e.g., from `req.user`) matches `userId`, or that the requester has an admin role.\n\n---\n\n### Moderate\n\n#### 4. Floating-Point Arithmetic for Currency\n\n```js\ntotal += item.price * item.quantity;\n```\n\nIf `price` is stored as a JavaScript `Number` (floating-point), this will accumulate rounding errors. For example, `0.1 + 0.2 !== 0.3` in IEEE 754 arithmetic.\n\n**Fix:** Store and transmit monetary values in integer cents, or use a decimal library (e.g., `decimal.js`) for arithmetic. Return the value to the client in a consistent format (e.g., cents as an integer, or a string representation of the decimal).\n\n---\n\n#### 5. `SELECT *` in Both Queries\n\nBoth queries use `SELECT *`, which:\n- Fetches columns that may not be needed (wasted bandwidth and memory).\n- Makes the API contract implicit \u2014 adding or removing a column in the database silently changes the API response shape.\n\n**Fix:** Explicitly list the columns needed by the endpoint.\n\n---\n\n### Minor\n\n#### 6. No Handling for Non-Existent User\n\nIf `userId` does not exist in the database, the endpoint returns `{ orders: [], totalSpend: 0 }` with a `200 OK`. Depending on your API conventions, this may be acceptable, but it's worth considering whether a `404` should be returned when the user is not found.\n\n#### 7. No Pagination\n\nFetching all orders for a user with no limit or offset will not scale. A user with thousands of orders will cause large payloads and slow queries. Consider adding `LIMIT`/`OFFSET` or cursor-based pagination, especially since this is described as powering an account dashboard.\n\n---\n\n## Positive Notes\n\n- The route is correctly mounted under a meaningful, RESTful path (`/users/:userId/orders`).\n- The use of parameterized queries (`$1`) for `userId` prevents SQL injection.\n- The logic for accumulating total spend is straightforward and easy to follow.\n\n---\n\n## Verdict\n\n**Request changes.** The N+1 query problem and missing error handling are blockers. The authorization gap is a security concern that must be addressed before this ships to production. The floating-point currency issue should also be fixed to avoid subtle financial calculation bugs.\n"}], "grading": {"eval_id": 2, "configuration": "without_skill", "expectations": [{"text": "Review identifies the N+1 query pattern in the order_items fetch loop", "passed": true, "evidence": "'#### 1. N+1 Query Problem \u2014 Lines 14\u201318' \u2014 explains 101 round-trips for 100 orders, provides batch ANY() fix"}, {"text": "Review flags that any user can access any other user's orders (IDOR / broken access control)", "passed": true, "evidence": "'#### 3. Missing Input Validation / Authorization' \u2014 explicitly calls out that any caller can enumerate any user's order history and total spend by changing userId"}, {"text": "Review flags floating point arithmetic for monetary values", "passed": true, "evidence": "'#### 4. Floating-Point Arithmetic for Currency' \u2014 explains IEEE 754 rounding, recommends integer cents or decimal.js"}, {"text": "Findings reference specific line numbers from the diff", "passed": true, "evidence": "Finding headers include 'Lines 14\u201318', 'Lines 20-25', though not all findings have line references"}], "pass_count": 4, "total_count": 4, "pass_rate": 1.0}}, {"id": "eval-3-path-traversal-with_skill", "prompt": "Go file processor PR: path traversal via unsanitized filename, swallowed errors, missing bytes import (compile error), deprecated ioutil", "eval_id": 3, "outputs": [{"name": "review.md", "type": "text", "content": "# Code Review \u2014 worker/processor.go\n\n## Inline Findings\n\n---\n\n### File: worker/processor.go  Line: 18-19\n**[SECURITY][error] Path traversal vulnerability \u2014 attacker-controlled filename escapes UploadDir**\n\n`filename` comes directly from the caller (ultimately from user input) and is passed to `filepath.Join` without any sanitization. An attacker can supply a filename like `../../etc/passwd` or `../config/secrets.yaml`, and `filepath.Join` will happily resolve the path outside `p.UploadDir`. The same unsanitized value is later used to construct the output path (`p.OutputDir+\"/\"+filename+\".out\"`), so the vulnerability is present in both the read and write paths.\n\nFix: After joining, verify the resolved path is still rooted under the expected directory:\n\n```go\nfilePath := filepath.Join(p.UploadDir, filepath.Clean(\"/\"+filename))\nabsUpload, _ := filepath.Abs(p.UploadDir)\nabsFile, _ := filepath.Abs(filePath)\nif !strings.HasPrefix(absFile, absUpload+string(os.PathSeparator)) {\n    return fmt.Errorf(\"invalid filename: %q escapes upload directory\", filename)\n}\n```\n\nApply the same guard before constructing the output path.\n\n---\n\n### File: worker/processor.go  Line: 23-27\n**[SECURITY][error] Command injection via unsanitized filename passed to exec.Command**\n\nThe `filename` value (user-supplied) is concatenated directly into the output path that becomes an argument to the external `convert` binary:\n\n```go\ncmd := exec.Command(\"convert\", \"-\", p.OutputDir+\"/\"+filename+\".out\")\n```\n\nIf the shell ever interprets this argument (e.g., a downstream wrapper, or if `convert` itself spawns a shell), a filename containing shell metacharacters (`;`, `|`, `$(...)`, etc.) becomes a command injection vector. Even without shell involvement, the filename controls which output path `convert` writes to, which is an arbitrary file write if path traversal isn't blocked (see finding above).\n\nFix: Sanitize `filename` to only allow alphanumerics, dots, underscores, and hyphens before it is used in any path or command argument. Use `filepath.Base` to strip any directory components, then validate against an allowlist regex.\n\n---\n\n### File: worker/processor.go  Line: 23\n**[SECURITY][error] `convert` resolved from PATH \u2014 tool hijacking risk**\n\n`exec.Command(\"convert\", ...)` resolves the binary using the process's `PATH`. If `PATH` is ever modified (e.g., in a containerized or CI environment where `PATH` is attacker-influenced, or via a compromised dependency that prepends a directory), an attacker can substitute a malicious `convert` binary.\n\nFix: Use an absolute path to the binary, configured via a struct field or build-time constant:\n\n```go\ntype FileProcessor struct {\n    UploadDir      string\n    OutputDir      string\n    ConverterBinary string // e.g. \"/usr/bin/convert\"\n}\n```\n\n---\n\n### File: worker/processor.go  Line: 25-28\n**[BUG][error] `bytes` package not imported \u2014 code will not compile**\n\n`bytes.NewReader(content)` is used on line 25 but `\"bytes\"` is not in the import block. This is a compilation error; the PR cannot be merged as-is.\n\nFix: Add `\"bytes\"` to the import block.\n\n---\n\n### File: worker/processor.go  Line: 26-28\n**[BUG][error] Conversion error is swallowed; function continues and returns nil**\n\n```go\nout, err := cmd.Output()\nif err != nil {\n    fmt.Println(\"conversion failed:\", err)\n}\n```\n\nWhen `convert` fails, the error is only printed \u2014 execution continues, the failed output file is not cleaned up, and `ProcessFile` returns `nil` (success). The caller has no way to know the conversion failed.\n\nAdditionally, `out` is assigned but never used, which is also a compile error in Go.\n\nFix:\n\n```go\nif err := cmd.Run(); err != nil {\n    return fmt.Errorf(\"conversion failed for %q: %w\", filename, err)\n}\n```\n\n(Switch to `cmd.Run()` since the output isn't needed, or use `cmd.Output()` and discard it explicitly with `_` if you need the return value for another reason.)\n\n---\n\n### File: worker/processor.go  Line: 31-36\n**[BUG][error] Glob errors silently ignored; nil `info` causes panic**\n\n```go\nfiles, _ := filepath.Glob(p.UploadDir + \"/*\")\nfor _, f := range files {\n    info, _ := os.Stat(f)\n    if info.Size() > 100*1024*1024 {\n```\n\n`filepath.Glob` errors are discarded. More dangerously, if `os.Stat` fails (file deleted between the glob and the stat, permission denied, etc.), `info` is `nil` and `info.Size()` panics with a nil pointer dereference, crashing the worker process.\n\nFix:\n\n```go\nfiles, err := filepath.Glob(filepath.Join(p.UploadDir, \"*\"))\nif err != nil {\n    return fmt.Errorf(\"glob failed: %w\", err)\n}\nfor _, f := range files {\n    info, err := os.Stat(f)\n    if err != nil {\n        continue // file may have been removed concurrently\n    }\n    if info.Size() > 100*1024*1024 {\n        if err := os.Remove(f); err != nil {\n            // log or return; don't silently ignore\n        }\n    }\n}\n```\n\n---\n\n### File: worker/processor.go  Line: 35\n**[BUG][error] `os.Remove` errors silently ignored**\n\nFailed deletions are not reported. If the worker is supposed to enforce a size cap, silently failing to delete oversized files is a logic error \u2014 disk space will fill up without any alert.\n\nFix: At minimum log the error; ideally return or accumulate it.\n\n---\n\n### File: worker/processor.go  Line: 31-36\n**[BUG][warning] `ProcessFile` deletes files it was not asked to process**\n\nThe function accepts a single `filename` to process, but the cleanup loop at the end scans and potentially deletes *all* files in `UploadDir` that exceed 100 MB. This means processing any one file can silently remove other files that are still being uploaded or waiting to be processed by concurrent workers. This is a concurrency hazard and a data loss bug.\n\nFix: Separate concerns \u2014 move the cleanup into a dedicated `CleanupOversizedFiles` method called by the scheduler, not from within `ProcessFile`.\n\n---\n\n### File: worker/processor.go  Line: 7\n**[CODE QUALITY][info] `ioutil.ReadFile` is deprecated**\n\n`io/ioutil` was deprecated in Go 1.16. Use `os.ReadFile` instead.\n\nFix:\n\n```go\ncontent, err := os.ReadFile(filePath)\n```\n\nRemove the `io/ioutil` import.\n\n---\n\n### File: worker/processor.go  Line: 22\n**[PERFORMANCE][warning] Entire file read into memory before streaming to `convert`**\n\n`ioutil.ReadFile` reads the entire file into a `[]byte`, then `bytes.NewReader` wraps it so it can be piped to `convert`. For large files this doubles peak memory usage unnecessarily.\n\nFix: Open the file and use it directly as stdin:\n\n```go\nf, err := os.Open(filePath)\nif err != nil {\n    return err\n}\ndefer f.Close()\ncmd.Stdin = f\n```\n\n---\n\n### File: worker/processor.go  Line: 22\n**[PERFORMANCE][warning] Output path uses string concatenation instead of `filepath.Join`**\n\n```go\np.OutputDir+\"/\"+filename+\".out\"\n```\n\nThis is not portable (hardcoded `/` separator), inconsistent with the use of `filepath.Join` for the input path, and prone to double-slash issues if `OutputDir` has a trailing slash.\n\nFix:\n\n```go\nfilepath.Join(p.OutputDir, filename+\".out\")\n```\n\n---\n\n## Code Review Summary\n\n**Overall: REQUEST CHANGES**\n\n| Category        | Errors | Warnings | Info |\n|-----------------|--------|----------|------|\n| Bugs            | 4      | 1        | 0    |\n| Security        | 3      | 0        | 0    |\n| Performance     | 0      | 2        | 0    |\n| Code Quality    | 0      | 0        | 1    |\n| Test Coverage   | 0      | 0        | 1    |\n| **Total**       | **7**  | **3**    | **2**|\n\n---\n\n### Critical Issues (must fix before merge)\n\n1. **[SECURITY] Path traversal** \u2014 `worker/processor.go:18-19` \u2014 User-controlled `filename` can escape `UploadDir` on both read and write paths.\n2. **[SECURITY] Command injection / arbitrary file write** \u2014 `worker/processor.go:23-27` \u2014 `filename` used unsanitized in the output argument to `exec.Command`.\n3. **[SECURITY] `convert` resolved via PATH** \u2014 `worker/processor.go:23` \u2014 Binary path should be absolute and explicitly configured.\n4. **[BUG] Won't compile: missing `bytes` import** \u2014 `worker/processor.go:25` \u2014 `bytes.NewReader` used without importing `\"bytes\"`.\n5. **[BUG] Won't compile: `out` declared and not used** \u2014 `worker/processor.go:26` \u2014 Go will refuse to compile an unused variable.\n6. **[BUG] Conversion errors swallowed** \u2014 `worker/processor.go:26-28` \u2014 Function returns `nil` on conversion failure; caller cannot detect the error.\n7. **[BUG] Nil pointer panic on failed `os.Stat`** \u2014 `worker/processor.go:32-34` \u2014 If `os.Stat` returns an error, calling `.Size()` on a nil `FileInfo` panics.\n\n### Recommended Fixes (should address)\n\n1. **[BUG] `ProcessFile` deletes unrelated files** \u2014 `worker/processor.go:31-36` \u2014 The cleanup loop is a data-loss risk under concurrent use; extract it to a separate method.\n2. **[BUG] `os.Remove` errors silently ignored** \u2014 `worker/processor.go:35` \u2014 Disk-space enforcement silently fails; at least log the error.\n3. **[PERFORMANCE] Whole file buffered in memory** \u2014 `worker/processor.go:22` \u2014 Stream directly from `os.Open` to avoid doubling peak memory usage.\n\n### Suggestions (optional improvements)\n\n1. **[CODE QUALITY]** Replace deprecated `io/ioutil.ReadFile` with `os.ReadFile` (`worker/processor.go:7`).\n2. **[TEST COVERAGE]** No tests accompany this new worker. At minimum: a happy-path test with a small fixture file, a test that verifies path traversal attempts are rejected, and a test for the conversion-failure error path.\n\n### What's Good\n\n- Using `filepath.Join` for the input path rather than raw string concatenation shows awareness of path handling \u2014 just needs to be applied consistently to the output path too.\n- The 100 MB size cap is a reasonable safeguard for a file processing worker; the intent is right, the implementation just needs to be made safe and isolated.\n"}], "grading": {"eval_id": 3, "configuration": "with_skill", "expectations": [{"text": "Review identifies path traversal vulnerability from unsanitized filename parameter", "passed": true, "evidence": "Lines 7-23: '[SECURITY][error] Path traversal vulnerability \u2014 attacker-controlled filename escapes UploadDir' \u2014 references line 18-19, gives ../../etc/passwd example, provides HasPrefix fix"}, {"text": "Review flags that errors from exec, Glob, Stat, or Remove are silently ignored", "passed": true, "evidence": "Lines 93-124: '[BUG][error] Glob errors silently ignored; nil info causes panic' and Lines 127-133: '[BUG][error] os.Remove errors silently ignored' \u2014 both caught"}, {"text": "Review catches either the missing bytes import (compile error) or deprecated ioutil.ReadFile", "passed": true, "evidence": "Lines 59-64: '[BUG][error] bytes package not imported \u2014 code will not compile' AND Lines 147-157: '[CODE QUALITY][info] ioutil.ReadFile is deprecated'"}, {"text": "Path traversal and/or command injection findings are marked as error or critical severity", "passed": true, "evidence": "[SECURITY][error] labels on both path traversal (line 7) and command injection (line 27) findings"}], "pass_count": 4, "total_count": 4, "pass_rate": 1.0}}, {"id": "eval-3-path-traversal-without_skill", "prompt": "Go file processor PR: path traversal via unsanitized filename, swallowed errors, missing bytes import (compile error), deprecated ioutil", "eval_id": 3, "outputs": [{"name": "review.md", "type": "text", "content": "# Code Review: worker/processor.go\n\n## Summary\n\nThis PR introduces a `FileProcessor` background worker for processing uploaded files. While the logic is simple, there are several **critical security vulnerabilities and bugs** that must be addressed before merging.\n\n---\n\n## Critical Issues\n\n### 1. Path Traversal Vulnerability (Security - Critical)\n\n**Location:** `ProcessFile`, line building `filePath`\n\n```go\nfilePath := filepath.Join(p.UploadDir, filename)\n```\n\nThe `filename` parameter is passed directly from the caller without any sanitization. An attacker could supply a value like `../../etc/passwd` or `../secrets.env`, and `filepath.Join` will happily resolve it outside of `UploadDir`. This allows arbitrary file reads from the server filesystem.\n\n**Fix:** Validate that the resolved path stays within `UploadDir` after joining:\n\n```go\nfilePath := filepath.Join(p.UploadDir, filepath.Base(filename))\n// or verify the resolved path has the expected prefix:\nabs, err := filepath.Abs(filePath)\nif err != nil || !strings.HasPrefix(abs, filepath.Clean(p.UploadDir)+string(os.PathSeparator)) {\n    return fmt.Errorf(\"invalid filename: path traversal detected\")\n}\n```\n\n---\n\n### 2. Shell Injection Risk via External Command (Security - Critical)\n\n**Location:** `exec.Command(\"convert\", ...)`\n\n```go\ncmd := exec.Command(\"convert\", \"-\", p.OutputDir+\"/\"+filename+\".out\")\n```\n\nThe output path is constructed by concatenating user-controlled `filename` directly into the argument. While `exec.Command` avoids a shell (unlike `exec.Command(\"sh\", \"-c\", ...)`), the filename still controls the output path argument. Combined with the missing path traversal check above, this could write output files to arbitrary locations on disk.\n\nAdditionally, `convert` is invoked by name with no absolute path, relying entirely on `$PATH`. If an attacker or misconfigured environment has a rogue `convert` binary earlier in `$PATH`, it will be executed instead of the intended tool (e.g., ImageMagick's `convert`).\n\n**Fix:** Use an absolute path for the binary (e.g., `/usr/bin/convert`) and apply the same path sanitization to the output path.\n\n---\n\n### 3. Missing Import: `bytes` Package\n\n**Location:** Top of file / `cmd.Stdin` assignment\n\n```go\ncmd.Stdin = bytes.NewReader(content)\n```\n\nThe `bytes` package is not listed in the import block. This code will not compile as-is.\n\n**Fix:** Add `\"bytes\"` to the import block.\n\n---\n\n## Significant Bugs\n\n### 4. Errors from the `convert` Command Are Silently Swallowed\n\n```go\nout, err := cmd.Output()\nif err != nil {\n    fmt.Println(\"conversion failed:\", err)\n}\n```\n\n- The error is printed but not returned, so the function continues as if the conversion succeeded.\n- The variable `out` is assigned but never used \u2014 this is a compile error in Go (`declared and not used`).\n\n**Fix:** Return the error on failure, and either use `out` or switch to `cmd.Run()`:\n\n```go\nif err := cmd.Run(); err != nil {\n    return fmt.Errorf(\"conversion failed: %w\", err)\n}\n```\n\n---\n\n### 5. Silently Ignored Errors Throughout\n\nMultiple errors are discarded with `_`:\n\n```go\nfiles, _ := filepath.Glob(p.UploadDir + \"/*\")\ninfo, _ := os.Stat(f)\nos.Remove(f)\n```\n\n- If `filepath.Glob` fails, `files` is nil and the loop silently does nothing.\n- If `os.Stat` fails, `info` is nil and the subsequent `info.Size()` call will **panic** with a nil pointer dereference.\n- The `os.Remove` error is discarded, so failed deletions go unnoticed.\n\n**Fix:** Handle all errors explicitly:\n\n```go\nfiles, err := filepath.Glob(p.UploadDir + \"/*\")\nif err != nil {\n    return fmt.Errorf(\"glob failed: %w\", err)\n}\nfor _, f := range files {\n    info, err := os.Stat(f)\n    if err != nil {\n        // log and continue, or return\n        continue\n    }\n    if info.Size() > 100*1024*1024 {\n        if err := os.Remove(f); err != nil {\n            // log the error\n        }\n    }\n}\n```\n\n---\n\n## Minor Issues\n\n### 6. `ioutil.ReadFile` Is Deprecated\n\n```go\ncontent, err := ioutil.ReadFile(filePath)\n```\n\n`io/ioutil` was deprecated in Go 1.16. Use `os.ReadFile` instead:\n\n```go\ncontent, err := os.ReadFile(filePath)\n```\n\nThis also removes the need to import `\"io/ioutil\"`.\n\n---\n\n### 7. Unexpected Side Effect: ProcessFile Deletes Unrelated Files\n\nThe `ProcessFile` function is responsible for processing a single named file, but it also scans the entire upload directory and deletes any file over 100MB. This is an unexpected side effect with no clear ownership or documentation. It should be extracted into a separate method (e.g., `CleanupLargeFiles`) and called explicitly by the worker orchestrator.\n\n---\n\n### 8. Output Path Construction Is Fragile\n\n```go\np.OutputDir+\"/\"+filename+\".out\"\n```\n\nUse `filepath.Join` for portability and correctness:\n\n```go\nfilepath.Join(p.OutputDir, filename+\".out\")\n```\n\n---\n\n## Summary Table\n\n| # | Severity | Issue |\n|---|----------|-------|\n| 1 | Critical | Path traversal via unsanitized `filename` |\n| 2 | Critical | Arbitrary write path + untrusted `$PATH` for `convert` |\n| 3 | Critical | Missing `bytes` import \u2014 does not compile |\n| 4 | High | `convert` errors swallowed; `out` variable unused (compile error) |\n| 5 | High | Nil pointer panic from ignored `os.Stat` error |\n| 6 | Low | Deprecated `ioutil.ReadFile` |\n| 7 | Medium | Unexpected side effect (bulk deletion) inside `ProcessFile` |\n| 8 | Low | Fragile string concatenation for path construction |\n\n---\n\n## Verdict\n\n**Do not merge.** This PR has two compile errors (missing `bytes` import, unused `out` variable) that mean it cannot even build, plus two critical security vulnerabilities (path traversal, arbitrary output path). All critical and high severity issues must be resolved first.\n"}], "grading": {"eval_id": 3, "configuration": "without_skill", "expectations": [{"text": "Review identifies path traversal vulnerability from unsanitized filename parameter", "passed": true, "evidence": "'### 1. Path Traversal Vulnerability (Security - Critical)' \u2014 ../../etc/passwd example, filepath.Base / HasPrefix fix"}, {"text": "Review flags that errors from exec, Glob, Stat, or Remove are silently ignored", "passed": true, "evidence": "'### 5. Silently Ignored Errors Throughout' \u2014 covers Glob, os.Stat (nil pointer panic), and os.Remove all in one finding"}, {"text": "Review catches either the missing bytes import (compile error) or deprecated ioutil.ReadFile", "passed": true, "evidence": "'### 3. Missing Import: bytes Package' and '### 6. ioutil.ReadFile Is Deprecated' \u2014 both caught"}, {"text": "Path traversal and/or command injection findings are marked as error or critical severity", "passed": true, "evidence": "Path traversal and command injection both labeled 'Security - Critical' in section headers"}], "pass_count": 4, "total_count": 4, "pass_rate": 1.0}}], "previous_feedback": {}, "previous_outputs": {}, "benchmark": {"skill_name": "ai-code-reviewer", "iteration": 1, "configurations": [{"name": "with_skill", "evals": [{"eval_id": 1, "eval_name": "eval-1-sql-injection", "pass_rate": 1.0, "pass_count": 5, "total_count": 5, "duration_ms": 65434, "total_tokens": 14980}, {"eval_id": 2, "eval_name": "eval-2-n-plus-1", "pass_rate": 1.0, "pass_count": 4, "total_count": 4, "duration_ms": 68592, "total_tokens": 14915}, {"eval_id": 3, "eval_name": "eval-3-path-traversal", "pass_rate": 1.0, "pass_count": 4, "total_count": 4, "duration_ms": 75175, "total_tokens": 15113}], "aggregate": {"pass_rate_mean": 1.0, "pass_rate_stddev": 0.0, "duration_ms_mean": 69733.67, "total_tokens_mean": 15002.67}}, {"name": "without_skill", "evals": [{"eval_id": 1, "eval_name": "eval-1-sql-injection", "pass_rate": 0.8, "pass_count": 4, "total_count": 5, "duration_ms": 37342, "total_tokens": 10386}, {"eval_id": 2, "eval_name": "eval-2-n-plus-1", "pass_rate": 1.0, "pass_count": 4, "total_count": 4, "duration_ms": 40631, "total_tokens": 10303}, {"eval_id": 3, "eval_name": "eval-3-path-traversal", "pass_rate": 1.0, "pass_count": 4, "total_count": 4, "duration_ms": 43580, "total_tokens": 10469}], "aggregate": {"pass_rate_mean": 0.933, "pass_rate_stddev": 0.094, "duration_ms_mean": 40517.67, "total_tokens_mean": 10386.0}}], "delta": {"pass_rate": "+0.067 (with_skill wins)", "duration_ms": "+29216ms (with_skill is slower)", "total_tokens": "+4617 tokens (with_skill uses more)"}, "analyst_observations": ["with_skill achieves 100% pass rate vs 93.3% baseline \u2014 the only failure was the structured summary table assertion on eval-1 baseline", "The skill's output format is significantly more structured: inline [CATEGORY][severity] labels, markdown summary table, and 'What's Good' section are consistent across all 3 runs", "Baseline reviews are high-quality but free-form \u2014 good content coverage, weaker on output consistency and GitHub-ready formatting", "The skill uses ~44% more tokens (15003 vs 10386 avg) due to richer formatting and more extensive inline comment blocks", "The skill is ~72% slower (69734ms vs 40518ms avg) \u2014 the extra time is spent on structured analysis phases", "Eval-2 and Eval-3 were perfect for both configurations \u2014 those assertions may be too easy (both catch N+1, path traversal, etc.). The differentiating assertion is the summary table in eval-1.", "The 'What's Good' section (calling out correct use of parameterized queries, sensible response shapes) only appeared in the with-skill outputs \u2014 adds meaningful positivity absent in baseline"]}};
+
+    // ---- State ----
+    let feedbackMap = {};  // run_id -> feedback text
+    let currentIndex = 0;
+    let visitedRuns = new Set();
+
+    // ---- Init ----
+    async function init() {
+      // Load saved feedback from server — but only if this isn't a fresh
+      // iteration (indicated by previous_feedback being present). When
+      // previous feedback exists, the feedback.json on disk is stale from
+      // the prior iteration and should not pre-fill the textareas.
+      const hasPrevious = Object.keys(EMBEDDED_DATA.previous_feedback || {}).length > 0
+        || Object.keys(EMBEDDED_DATA.previous_outputs || {}).length > 0;
+      if (!hasPrevious) {
+        try {
+          const resp = await fetch("/api/feedback");
+          const data = await resp.json();
+          if (data.reviews) {
+            for (const r of data.reviews) feedbackMap[r.run_id] = r.feedback;
+          }
+        } catch { /* first run, no feedback yet */ }
+      }
+
+      document.getElementById("skill-name").textContent = EMBEDDED_DATA.skill_name;
+      showRun(0);
+
+      // Wire up feedback auto-save
+      const textarea = document.getElementById("feedback");
+      let saveTimeout = null;
+      textarea.addEventListener("input", () => {
+        clearTimeout(saveTimeout);
+        document.getElementById("feedback-status").textContent = "";
+        saveTimeout = setTimeout(() => saveCurrentFeedback(), 800);
+      });
+    }
+
+    // ---- Navigation ----
+    function navigate(delta) {
+      const newIndex = currentIndex + delta;
+      if (newIndex >= 0 && newIndex < EMBEDDED_DATA.runs.length) {
+        saveCurrentFeedback();
+        showRun(newIndex);
+      }
+    }
+
+    function updateNavButtons() {
+      document.getElementById("prev-btn").disabled = currentIndex === 0;
+      document.getElementById("next-btn").disabled =
+        currentIndex === EMBEDDED_DATA.runs.length - 1;
+    }
+
+    // ---- Show a run ----
+    function showRun(index) {
+      currentIndex = index;
+      const run = EMBEDDED_DATA.runs[index];
+
+      // Progress
+      document.getElementById("progress").textContent =
+        `${index + 1} of ${EMBEDDED_DATA.runs.length}`;
+
+      // Prompt
+      document.getElementById("prompt-text").textContent = run.prompt;
+
+      // Config badge
+      const badge = document.getElementById("config-badge");
+      const configMatch = run.id.match(/(with_skill|without_skill|new_skill|old_skill)/);
+      if (configMatch) {
+        const config = configMatch[1];
+        const isBaseline = config === "without_skill" || config === "old_skill";
+        badge.textContent = config.replace(/_/g, " ");
+        badge.className = "config-badge " + (isBaseline ? "config-baseline" : "config-primary");
+        badge.style.display = "inline-block";
+      } else {
+        badge.style.display = "none";
+      }
+
+      // Outputs
+      renderOutputs(run);
+
+      // Previous outputs
+      renderPrevOutputs(run);
+
+      // Grades
+      renderGrades(run);
+
+      // Previous feedback
+      const prevFb = (EMBEDDED_DATA.previous_feedback || {})[run.id];
+      const prevEl = document.getElementById("prev-feedback");
+      if (prevFb) {
+        document.getElementById("prev-feedback-text").textContent = prevFb;
+        prevEl.style.display = "block";
+      } else {
+        prevEl.style.display = "none";
+      }
+
+      // Feedback
+      document.getElementById("feedback").value = feedbackMap[run.id] || "";
+      document.getElementById("feedback-status").textContent = "";
+
+      updateNavButtons();
+
+      // Track visited runs and promote done button when all visited
+      visitedRuns.add(index);
+      const doneBtn = document.getElementById("done-btn");
+      if (visitedRuns.size >= EMBEDDED_DATA.runs.length) {
+        doneBtn.classList.add("ready");
+      }
+
+      // Scroll main content to top
+      document.querySelector(".main").scrollTop = 0;
+    }
+
+    // ---- Render outputs ----
+    function renderOutputs(run) {
+      const container = document.getElementById("outputs-body");
+      container.innerHTML = "";
+
+      const outputs = run.outputs || [];
+      if (outputs.length === 0) {
+        container.innerHTML = '<div class="empty-state">No output files</div>';
+        return;
+      }
+
+      for (const file of outputs) {
+        const fileDiv = document.createElement("div");
+        fileDiv.className = "output-file";
+
+        // Always show file header with download link
+        const header = document.createElement("div");
+        header.className = "output-file-header";
+        const nameSpan = document.createElement("span");
+        nameSpan.textContent = file.name;
+        header.appendChild(nameSpan);
+        const dlBtn = document.createElement("a");
+        dlBtn.className = "dl-btn";
+        dlBtn.textContent = "Download";
+        dlBtn.download = file.name;
+        dlBtn.href = getDownloadUri(file);
+        header.appendChild(dlBtn);
+        fileDiv.appendChild(header);
+
+        const content = document.createElement("div");
+        content.className = "output-file-content";
+
+        if (file.type === "text") {
+          const pre = document.createElement("pre");
+          pre.textContent = file.content;
+          content.appendChild(pre);
+        } else if (file.type === "image") {
+          const img = document.createElement("img");
+          img.src = file.data_uri;
+          img.alt = file.name;
+          content.appendChild(img);
+        } else if (file.type === "pdf") {
+          const iframe = document.createElement("iframe");
+          iframe.src = file.data_uri;
+          content.appendChild(iframe);
+        } else if (file.type === "xlsx") {
+          renderXlsx(content, file.data_b64);
+        } else if (file.type === "binary") {
+          const a = document.createElement("a");
+          a.className = "download-link";
+          a.href = file.data_uri;
+          a.download = file.name;
+          a.textContent = "Download " + file.name;
+          content.appendChild(a);
+        } else if (file.type === "error") {
+          const pre = document.createElement("pre");
+          pre.textContent = file.content;
+          pre.style.color = "var(--red)";
+          content.appendChild(pre);
+        }
+
+        fileDiv.appendChild(content);
+        container.appendChild(fileDiv);
+      }
+    }
+
+    // ---- XLSX rendering via SheetJS ----
+    function renderXlsx(container, b64Data) {
+      try {
+        const raw = Uint8Array.from(atob(b64Data), c => c.charCodeAt(0));
+        const wb = XLSX.read(raw, { type: "array" });
+
+        for (let i = 0; i < wb.SheetNames.length; i++) {
+          const sheetName = wb.SheetNames[i];
+          const ws = wb.Sheets[sheetName];
+
+          if (wb.SheetNames.length > 1) {
+            const sheetLabel = document.createElement("div");
+            sheetLabel.style.cssText =
+              "font-weight:600; font-size:0.8rem; color:#b0aea5; margin-top:0.5rem; margin-bottom:0.25rem;";
+            sheetLabel.textContent = "Sheet: " + sheetName;
+            container.appendChild(sheetLabel);
+          }
+
+          const htmlStr = XLSX.utils.sheet_to_html(ws, { editable: false });
+          const wrapper = document.createElement("div");
+          wrapper.innerHTML = htmlStr;
+          container.appendChild(wrapper);
+        }
+      } catch (err) {
+        container.textContent = "Error rendering spreadsheet: " + err.message;
+      }
+    }
+
+    // ---- Grades ----
+    function renderGrades(run) {
+      const section = document.getElementById("grades-section");
+      const content = document.getElementById("grades-content");
+
+      if (!run.grading) {
+        section.style.display = "none";
+        return;
+      }
+
+      const grading = run.grading;
+      section.style.display = "block";
+      // Reset to collapsed
+      content.classList.remove("open");
+      document.getElementById("grades-arrow").classList.remove("open");
+
+      const summary = grading.summary || {};
+      const expectations = grading.expectations || [];
+
+      let html = '<div style="padding: 1rem;">';
+
+      // Summary line
+      const passRate = summary.pass_rate != null
+        ? Math.round(summary.pass_rate * 100) + "%"
+        : "?";
+      const badgeClass = summary.pass_rate >= 0.8 ? "grade-pass" : summary.pass_rate >= 0.5 ? "" : "grade-fail";
+      html += '<div class="grades-summary">';
+      html += '<span class="grade-badge ' + badgeClass + '">' + passRate + '</span>';
+      html += '<span>' + (summary.passed || 0) + ' passed, ' + (summary.failed || 0) + ' failed of ' + (summary.total || 0) + '</span>';
+      html += '</div>';
+
+      // Assertions list
+      html += '<ul class="assertion-list">';
+      for (const exp of expectations) {
+        const statusClass = exp.passed ? "pass" : "fail";
+        const statusIcon = exp.passed ? "\u2713" : "\u2717";
+        html += '<li class="assertion-item">';
+        html += '<span class="assertion-status ' + statusClass + '">' + statusIcon + '</span>';
+        html += '<span>' + escapeHtml(exp.text) + '</span>';
+        if (exp.evidence) {
+          html += '<div class="assertion-evidence">' + escapeHtml(exp.evidence) + '</div>';
+        }
+        html += '</li>';
+      }
+      html += '</ul>';
+
+      html += '</div>';
+      content.innerHTML = html;
+    }
+
+    function toggleGrades() {
+      const content = document.getElementById("grades-content");
+      const arrow = document.getElementById("grades-arrow");
+      content.classList.toggle("open");
+      arrow.classList.toggle("open");
+    }
+
+    // ---- Previous outputs (collapsible) ----
+    function renderPrevOutputs(run) {
+      const section = document.getElementById("prev-outputs-section");
+      const content = document.getElementById("prev-outputs-content");
+      const prevOutputs = (EMBEDDED_DATA.previous_outputs || {})[run.id];
+
+      if (!prevOutputs || prevOutputs.length === 0) {
+        section.style.display = "none";
+        return;
+      }
+
+      section.style.display = "block";
+      // Reset to collapsed
+      content.classList.remove("open");
+      document.getElementById("prev-outputs-arrow").classList.remove("open");
+
+      // Render the files into the content area
+      content.innerHTML = "";
+      const wrapper = document.createElement("div");
+      wrapper.style.padding = "1rem";
+
+      for (const file of prevOutputs) {
+        const fileDiv = document.createElement("div");
+        fileDiv.className = "output-file";
+
+        const header = document.createElement("div");
+        header.className = "output-file-header";
+        const nameSpan = document.createElement("span");
+        nameSpan.textContent = file.name;
+        header.appendChild(nameSpan);
+        const dlBtn = document.createElement("a");
+        dlBtn.className = "dl-btn";
+        dlBtn.textContent = "Download";
+        dlBtn.download = file.name;
+        dlBtn.href = getDownloadUri(file);
+        header.appendChild(dlBtn);
+        fileDiv.appendChild(header);
+
+        const fc = document.createElement("div");
+        fc.className = "output-file-content";
+
+        if (file.type === "text") {
+          const pre = document.createElement("pre");
+          pre.textContent = file.content;
+          fc.appendChild(pre);
+        } else if (file.type === "image") {
+          const img = document.createElement("img");
+          img.src = file.data_uri;
+          img.alt = file.name;
+          fc.appendChild(img);
+        } else if (file.type === "pdf") {
+          const iframe = document.createElement("iframe");
+          iframe.src = file.data_uri;
+          fc.appendChild(iframe);
+        } else if (file.type === "xlsx") {
+          renderXlsx(fc, file.data_b64);
+        } else if (file.type === "binary") {
+          const a = document.createElement("a");
+          a.className = "download-link";
+          a.href = file.data_uri;
+          a.download = file.name;
+          a.textContent = "Download " + file.name;
+          fc.appendChild(a);
+        }
+
+        fileDiv.appendChild(fc);
+        wrapper.appendChild(fileDiv);
+      }
+
+      content.appendChild(wrapper);
+    }
+
+    function togglePrevOutputs() {
+      const content = document.getElementById("prev-outputs-content");
+      const arrow = document.getElementById("prev-outputs-arrow");
+      content.classList.toggle("open");
+      arrow.classList.toggle("open");
+    }
+
+    // ---- Feedback (saved to server -> feedback.json) ----
+    function saveCurrentFeedback() {
+      const run = EMBEDDED_DATA.runs[currentIndex];
+      const text = document.getElementById("feedback").value;
+
+      if (text.trim() === "") {
+        delete feedbackMap[run.id];
+      } else {
+        feedbackMap[run.id] = text;
+      }
+
+      // Build reviews array from map
+      const reviews = [];
+      for (const [run_id, feedback] of Object.entries(feedbackMap)) {
+        if (feedback.trim()) {
+          reviews.push({ run_id, feedback, timestamp: new Date().toISOString() });
+        }
+      }
+
+      fetch("/api/feedback", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ reviews, status: "in_progress" }),
+      }).then(() => {
+        document.getElementById("feedback-status").textContent = "Saved";
+      }).catch(() => {
+        // Static mode or server unavailable — no-op on auto-save,
+        // feedback will be downloaded on final submit
+        document.getElementById("feedback-status").textContent = "Will download on submit";
+      });
+    }
+
+    // ---- Done ----
+    function showDoneDialog() {
+      // Save current textarea to feedbackMap (but don't POST yet)
+      const run = EMBEDDED_DATA.runs[currentIndex];
+      const text = document.getElementById("feedback").value;
+      if (text.trim() === "") {
+        delete feedbackMap[run.id];
+      } else {
+        feedbackMap[run.id] = text;
+      }
+
+      // POST once with status: complete — include ALL runs so the model
+      // can distinguish "no feedback" (looks good) from "not reviewed"
+      const reviews = [];
+      const ts = new Date().toISOString();
+      for (const r of EMBEDDED_DATA.runs) {
+        reviews.push({ run_id: r.id, feedback: feedbackMap[r.id] || "", timestamp: ts });
+      }
+      const payload = JSON.stringify({ reviews, status: "complete" }, null, 2);
+      fetch("/api/feedback", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: payload,
+      }).then(() => {
+        document.getElementById("done-overlay").classList.add("visible");
+      }).catch(() => {
+        // Server not available (static mode) — download as file
+        const blob = new Blob([payload], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "feedback.json";
+        a.click();
+        URL.revokeObjectURL(url);
+        document.getElementById("done-overlay").classList.add("visible");
+      });
+    }
+
+    function closeDoneDialog() {
+      // Reset status back to in_progress
+      saveCurrentFeedback();
+      document.getElementById("done-overlay").classList.remove("visible");
+    }
+
+    // ---- Toast ----
+    function showToast(message) {
+      const toast = document.getElementById("toast");
+      toast.textContent = message;
+      toast.classList.add("visible");
+      setTimeout(() => toast.classList.remove("visible"), 2000);
+    }
+
+    // ---- Keyboard nav ----
+    document.addEventListener("keydown", (e) => {
+      // Don't capture when typing in textarea
+      if (e.target.tagName === "TEXTAREA") return;
+
+      if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
+        e.preventDefault();
+        navigate(-1);
+      } else if (e.key === "ArrowRight" || e.key === "ArrowDown") {
+        e.preventDefault();
+        navigate(1);
+      }
+    });
+
+    // ---- Util ----
+    function getDownloadUri(file) {
+      if (file.data_uri) return file.data_uri;
+      if (file.data_b64) return "data:application/octet-stream;base64," + file.data_b64;
+      if (file.type === "text") return "data:text/plain;charset=utf-8," + encodeURIComponent(file.content);
+      return "#";
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement("div");
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    // ---- View switching ----
+    function switchView(view) {
+      document.querySelectorAll(".view-tab").forEach(t => t.classList.remove("active"));
+      document.querySelectorAll(".view-panel").forEach(p => p.classList.remove("active"));
+      document.querySelector(`[onclick="switchView('${view}')"]`).classList.add("active");
+      document.getElementById("panel-" + view).classList.add("active");
+    }
+
+    // ---- Benchmark rendering ----
+    function renderBenchmark() {
+      const data = EMBEDDED_DATA.benchmark;
+      if (!data) return;
+
+      // Show the tabs
+      document.getElementById("view-tabs").style.display = "flex";
+
+      const container = document.getElementById("benchmark-content");
+      const summary = data.run_summary || {};
+      const metadata = data.metadata || {};
+      const notes = data.notes || [];
+
+      let html = "";
+
+      // Header
+      html += "<h2 style='font-family: Poppins, sans-serif; margin-bottom: 0.5rem;'>Benchmark Results</h2>";
+      html += "<p style='color: var(--text-muted); font-size: 0.875rem; margin-bottom: 1.25rem;'>";
+      if (metadata.skill_name) html += "<strong>" + escapeHtml(metadata.skill_name) + "</strong> &mdash; ";
+      if (metadata.timestamp) html += metadata.timestamp + " &mdash; ";
+      if (metadata.evals_run) html += "Evals: " + metadata.evals_run.join(", ") + " &mdash; ";
+      html += (metadata.runs_per_configuration || "?") + " runs per configuration";
+      html += "</p>";
+
+      // Summary table
+      html += '<table class="benchmark-table">';
+
+      function fmtStat(stat, pct) {
+        if (!stat) return "—";
+        const suffix = pct ? "%" : "";
+        const m = pct ? (stat.mean * 100).toFixed(0) : stat.mean.toFixed(1);
+        const s = pct ? (stat.stddev * 100).toFixed(0) : stat.stddev.toFixed(1);
+        return m + suffix + " ± " + s + suffix;
+      }
+
+      function deltaClass(val) {
+        if (!val) return "";
+        const n = parseFloat(val);
+        if (n > 0) return "benchmark-delta-positive";
+        if (n < 0) return "benchmark-delta-negative";
+        return "";
+      }
+
+      // Discover config names dynamically (everything except "delta")
+      const configs = Object.keys(summary).filter(k => k !== "delta");
+      const configA = configs[0] || "config_a";
+      const configB = configs[1] || "config_b";
+      const labelA = configA.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+      const labelB = configB.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+      const a = summary[configA] || {};
+      const b = summary[configB] || {};
+      const delta = summary.delta || {};
+
+      html += "<thead><tr><th>Metric</th><th>" + escapeHtml(labelA) + "</th><th>" + escapeHtml(labelB) + "</th><th>Delta</th></tr></thead>";
+      html += "<tbody>";
+
+      html += "<tr><td><strong>Pass Rate</strong></td>";
+      html += "<td>" + fmtStat(a.pass_rate, true) + "</td>";
+      html += "<td>" + fmtStat(b.pass_rate, true) + "</td>";
+      html += '<td class="' + deltaClass(delta.pass_rate) + '">' + (delta.pass_rate || "—") + "</td></tr>";
+
+      // Time (only show row if data exists)
+      if (a.time_seconds || b.time_seconds) {
+        html += "<tr><td><strong>Time (s)</strong></td>";
+        html += "<td>" + fmtStat(a.time_seconds, false) + "</td>";
+        html += "<td>" + fmtStat(b.time_seconds, false) + "</td>";
+        html += '<td class="' + deltaClass(delta.time_seconds) + '">' + (delta.time_seconds ? delta.time_seconds + "s" : "—") + "</td></tr>";
+      }
+
+      // Tokens (only show row if data exists)
+      if (a.tokens || b.tokens) {
+        html += "<tr><td><strong>Tokens</strong></td>";
+        html += "<td>" + fmtStat(a.tokens, false) + "</td>";
+        html += "<td>" + fmtStat(b.tokens, false) + "</td>";
+        html += '<td class="' + deltaClass(delta.tokens) + '">' + (delta.tokens || "—") + "</td></tr>";
+      }
+
+      html += "</tbody></table>";
+
+      // Per-eval breakdown (if runs data available)
+      const runs = data.runs || [];
+      if (runs.length > 0) {
+        const evalIds = [...new Set(runs.map(r => r.eval_id))].sort((a, b) => a - b);
+
+        html += "<h3 style='font-family: Poppins, sans-serif; margin-bottom: 0.75rem;'>Per-Eval Breakdown</h3>";
+
+        const hasTime = runs.some(r => r.result && r.result.time_seconds != null);
+        const hasErrors = runs.some(r => r.result && r.result.errors > 0);
+
+        for (const evalId of evalIds) {
+          const evalRuns = runs.filter(r => r.eval_id === evalId);
+          const evalName = evalRuns[0] && evalRuns[0].eval_name ? evalRuns[0].eval_name : "Eval " + evalId;
+
+          html += "<h4 style='font-family: Poppins, sans-serif; margin: 1rem 0 0.5rem; color: var(--text);'>" + escapeHtml(evalName) + "</h4>";
+          html += '<table class="benchmark-table">';
+          html += "<thead><tr><th>Config</th><th>Run</th><th>Pass Rate</th>";
+          if (hasTime) html += "<th>Time (s)</th>";
+          if (hasErrors) html += "<th>Crashes During Execution</th>";
+          html += "</tr></thead>";
+          html += "<tbody>";
+
+          // Group by config and render with average rows
+          const configGroups = [...new Set(evalRuns.map(r => r.configuration))];
+          for (let ci = 0; ci < configGroups.length; ci++) {
+            const config = configGroups[ci];
+            const configRuns = evalRuns.filter(r => r.configuration === config);
+            if (configRuns.length === 0) continue;
+
+            const rowClass = ci === 0 ? "benchmark-row-with" : "benchmark-row-without";
+            const configLabel = config.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+
+            for (const run of configRuns) {
+              const r = run.result || {};
+              const prClass = r.pass_rate >= 0.8 ? "benchmark-delta-positive" : r.pass_rate < 0.5 ? "benchmark-delta-negative" : "";
+              html += '<tr class="' + rowClass + '">';
+              html += "<td>" + configLabel + "</td>";
+              html += "<td>" + run.run_number + "</td>";
+              html += '<td class="' + prClass + '">' + ((r.pass_rate || 0) * 100).toFixed(0) + "% (" + (r.passed || 0) + "/" + (r.total || 0) + ")</td>";
+              if (hasTime) html += "<td>" + (r.time_seconds != null ? r.time_seconds.toFixed(1) : "—") + "</td>";
+              if (hasErrors) html += "<td>" + (r.errors || 0) + "</td>";
+              html += "</tr>";
+            }
+
+            // Average row
+            const rates = configRuns.map(r => (r.result || {}).pass_rate || 0);
+            const avgRate = rates.reduce((a, b) => a + b, 0) / rates.length;
+            const avgPrClass = avgRate >= 0.8 ? "benchmark-delta-positive" : avgRate < 0.5 ? "benchmark-delta-negative" : "";
+            html += '<tr class="benchmark-row-avg ' + rowClass + '">';
+            html += "<td>" + configLabel + "</td>";
+            html += "<td>Avg</td>";
+            html += '<td class="' + avgPrClass + '">' + (avgRate * 100).toFixed(0) + "%</td>";
+            if (hasTime) {
+              const times = configRuns.map(r => (r.result || {}).time_seconds).filter(t => t != null);
+              html += "<td>" + (times.length ? (times.reduce((a, b) => a + b, 0) / times.length).toFixed(1) : "—") + "</td>";
+            }
+            if (hasErrors) html += "<td></td>";
+            html += "</tr>";
+          }
+          html += "</tbody></table>";
+
+          // Per-assertion detail for this eval
+          const runsWithExpectations = {};
+          for (const config of configGroups) {
+            runsWithExpectations[config] = evalRuns.filter(r => r.configuration === config && r.expectations && r.expectations.length > 0);
+          }
+          const hasAnyExpectations = Object.values(runsWithExpectations).some(runs => runs.length > 0);
+          if (hasAnyExpectations) {
+            // Collect all unique assertion texts across all configs
+            const allAssertions = [];
+            const seen = new Set();
+            for (const config of configGroups) {
+              for (const run of runsWithExpectations[config]) {
+                for (const exp of (run.expectations || [])) {
+                  if (!seen.has(exp.text)) {
+                    seen.add(exp.text);
+                    allAssertions.push(exp.text);
+                  }
+                }
+              }
+            }
+
+            html += '<table class="benchmark-table" style="margin-top: 0.5rem;">';
+            html += "<thead><tr><th>Assertion</th>";
+            for (const config of configGroups) {
+              const label = config.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+              html += "<th>" + escapeHtml(label) + "</th>";
+            }
+            html += "</tr></thead><tbody>";
+
+            for (const assertionText of allAssertions) {
+              html += "<tr><td>" + escapeHtml(assertionText) + "</td>";
+
+              for (const config of configGroups) {
+                html += "<td>";
+                for (const run of runsWithExpectations[config]) {
+                  const exp = (run.expectations || []).find(e => e.text === assertionText);
+                  if (exp) {
+                    const cls = exp.passed ? "benchmark-delta-positive" : "benchmark-delta-negative";
+                    const icon = exp.passed ? "\u2713" : "\u2717";
+                    html += '<span class="' + cls + '" title="Run ' + run.run_number + ': ' + escapeHtml(exp.evidence || "") + '">' + icon + "</span> ";
+                  } else {
+                    html += "— ";
+                  }
+                }
+                html += "</td>";
+              }
+              html += "</tr>";
+            }
+            html += "</tbody></table>";
+          }
+        }
+      }
+
+      // Notes
+      if (notes.length > 0) {
+        html += '<div class="benchmark-notes">';
+        html += "<h3>Analysis Notes</h3>";
+        html += "<ul>";
+        for (const note of notes) {
+          html += "<li>" + escapeHtml(note) + "</li>";
+        }
+        html += "</ul></div>";
+      }
+
+      container.innerHTML = html;
+    }
+
+    // ---- Start ----
+    init();
+    renderBenchmark();
+  </script>
+</body>
+</html>

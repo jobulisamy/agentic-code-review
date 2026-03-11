@@ -1,0 +1,29 @@
+{
+  "eval_id": 2,
+  "configuration": "without_skill",
+  "expectations": [
+    {
+      "text": "Review identifies the N+1 query pattern in the order_items fetch loop",
+      "passed": true,
+      "evidence": "'#### 1. N+1 Query Problem — Lines 14–18' — explains 101 round-trips for 100 orders, provides batch ANY() fix"
+    },
+    {
+      "text": "Review flags that any user can access any other user's orders (IDOR / broken access control)",
+      "passed": true,
+      "evidence": "'#### 3. Missing Input Validation / Authorization' — explicitly calls out that any caller can enumerate any user's order history and total spend by changing userId"
+    },
+    {
+      "text": "Review flags floating point arithmetic for monetary values",
+      "passed": true,
+      "evidence": "'#### 4. Floating-Point Arithmetic for Currency' — explains IEEE 754 rounding, recommends integer cents or decimal.js"
+    },
+    {
+      "text": "Findings reference specific line numbers from the diff",
+      "passed": true,
+      "evidence": "Finding headers include 'Lines 14–18', 'Lines 20-25', though not all findings have line references"
+    }
+  ],
+  "pass_count": 4,
+  "total_count": 4,
+  "pass_rate": 1.0
+}

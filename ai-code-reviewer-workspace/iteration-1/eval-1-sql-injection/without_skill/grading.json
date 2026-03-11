@@ -1,0 +1,34 @@
+{
+  "eval_id": 1,
+  "configuration": "without_skill",
+  "expectations": [
+    {
+      "text": "Review identifies SQL injection vulnerability in the login or register endpoint",
+      "passed": true,
+      "evidence": "'SQL Injection (Severity: Critical)' section — explains f-string interpolation, gives exploit example, recommends parameterized queries"
+    },
+    {
+      "text": "Review flags MD5 as insecure for password storage and suggests bcrypt/argon2/scrypt",
+      "passed": true,
+      "evidence": "'Weak Password Hashing — MD5 (Severity: Critical)' — explains no salt, rainbow tables, recommends bcrypt/argon2 with code example"
+    },
+    {
+      "text": "Security issues are marked as error severity (not just warnings or info)",
+      "passed": true,
+      "evidence": "Both issues labeled 'Severity: Critical' under the Critical Issues section"
+    },
+    {
+      "text": "Overall verdict is REQUEST CHANGES given error-severity security issues",
+      "passed": true,
+      "evidence": "'**Verdict: Do not merge in current state.**' — strong rejection language"
+    },
+    {
+      "text": "Review includes a structured summary with category breakdown (table or list)",
+      "passed": false,
+      "evidence": "Uses prose sections (Critical Issues, High-Severity, Medium) but no structured category breakdown table with counts"
+    }
+  ],
+  "pass_count": 4,
+  "total_count": 5,
+  "pass_rate": 0.8
+}

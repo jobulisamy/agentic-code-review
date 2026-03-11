@@ -1,0 +1,34 @@
+{
+  "eval_id": 1,
+  "configuration": "with_skill",
+  "expectations": [
+    {
+      "text": "Review identifies SQL injection vulnerability in the login or register endpoint",
+      "passed": true,
+      "evidence": "Line 12: '[SECURITY][error] SQL injection via unsanitized username and password in login query' — explicitly calls out f-string interpolation into SQL, provides exploit example, recommends parameterized queries"
+    },
+    {
+      "text": "Review flags MD5 as insecure for password storage and suggests bcrypt/argon2/scrypt",
+      "passed": true,
+      "evidence": "Lines 53-73: '[SECURITY][error] MD5 used for password hashing — cryptographically broken' — explains no salt, rainbow tables, suggests bcrypt with code example"
+    },
+    {
+      "text": "Security issues are marked as error severity (not just warnings or info)",
+      "passed": true,
+      "evidence": "Both SQL injection and MD5 findings explicitly tagged [SECURITY][error]"
+    },
+    {
+      "text": "Overall verdict is REQUEST CHANGES given error-severity security issues",
+      "passed": true,
+      "evidence": "Line 177: '**Overall: REQUEST CHANGES**'"
+    },
+    {
+      "text": "Review includes a structured summary with category breakdown (table or list)",
+      "passed": true,
+      "evidence": "Lines 179-186: Markdown table with Bugs/Security/Performance/Code Quality/Test Coverage rows with Error/Warning/Info columns"
+    }
+  ],
+  "pass_count": 5,
+  "total_count": 5,
+  "pass_rate": 1.0
+}

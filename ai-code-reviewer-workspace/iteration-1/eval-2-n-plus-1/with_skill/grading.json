@@ -1,0 +1,29 @@
+{
+  "eval_id": 2,
+  "configuration": "with_skill",
+  "expectations": [
+    {
+      "text": "Review identifies the N+1 query pattern in the order_items fetch loop",
+      "passed": true,
+      "evidence": "Lines 48-66: '[PERFORMANCE][error] N+1 query pattern — one DB query is issued per order' — references lines 13-17, explains 100 orders = 101 queries, provides JOIN and batch fix"
+    },
+    {
+      "text": "Review flags that any user can access any other user's orders (IDOR / broken access control)",
+      "passed": true,
+      "evidence": "Lines 13-24: '[SECURITY][error] No authentication or authorization check — any user can fetch any user's orders' — explicitly names IDOR, line 10"
+    },
+    {
+      "text": "Review flags floating point arithmetic for monetary values",
+      "passed": true,
+      "evidence": "Lines 86-103: '[BUGS][warning] Floating-point arithmetic used for currency — total spend will have rounding errors' — explains IEEE 754, recommends integer cents or decimal.js"
+    },
+    {
+      "text": "Findings reference specific line numbers from the diff",
+      "passed": true,
+      "evidence": "Multiple findings explicitly call out 'Line: 10', 'Lines: 13–17', 'Lines: 20–25', 'Lines: 9–28'"
+    }
+  ],
+  "pass_count": 4,
+  "total_count": 4,
+  "pass_rate": 1.0
+}
