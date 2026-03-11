@@ -30,7 +30,13 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. SQLite database file is created with the correct schema on first startup without manual intervention
   4. An Alembic migration exists for the initial schema and runs cleanly against a fresh DB
   5. Environment variables (API keys, secrets) are loaded from `.env` and never appear in source files
-**Plans**: TBD
+**Plans**: 4 plans
+
+Plans:
+- [ ] 01-01-PLAN.md — Wave 0: pytest config and test scaffold (RED state)
+- [ ] 01-02-PLAN.md — Wave 1: Backend skeleton (FastAPI, config, DB, Alembic, health endpoint)
+- [ ] 01-03-PLAN.md — Wave 1: Frontend skeleton (Vite + React + TS + Tailwind, Dockerfile)
+- [ ] 01-04-PLAN.md — Wave 2: Docker Compose wiring + smoke verification
 
 ### Phase 2: Core Review Pipeline
 **Goal**: Paste code, receive structured AI findings — the complete review pipeline works end-to-end via API
@@ -88,7 +94,7 @@ Note: Phase 3 (Web UI) and Phase 4 (GitHub Integration) are independent once Pha
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation | 0/? | Not started | - |
+| 1. Foundation | 0/4 | Planning done | - |
 | 2. Core Review Pipeline | 0/? | Not started | - |
 | 3. React Web UI | 0/? | Not started | - |
 | 4. GitHub Integration | 0/? | Not started | - |
