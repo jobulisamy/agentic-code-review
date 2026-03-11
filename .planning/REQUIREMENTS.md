@@ -8,11 +8,11 @@
 ### Infrastructure
 
 - [ ] **INFRA-01**: Docker Compose starts backend + frontend with a single `docker-compose up`
-- [ ] **INFRA-02**: Backend container serves FastAPI on port 8000 with hot-reload in dev
-- [x] **INFRA-03**: Frontend container serves Vite dev server on port 5173 with hot-reload
-- [ ] **INFRA-04**: Environment variables loaded from `.env` file (never hardcoded in source)
-- [ ] **INFRA-05**: SQLite database initializes with correct schema on first startup
-- [ ] **INFRA-06**: Alembic migrations manage all schema changes
+- [x] **INFRA-02**: Backend container serves FastAPI on port 8000 with hot-reload in dev
+- [ ] **INFRA-03**: Frontend container serves Vite dev server on port 5173 with hot-reload
+- [x] **INFRA-04**: Environment variables loaded from `.env` file (never hardcoded in source)
+- [x] **INFRA-05**: SQLite database initializes with correct schema on first startup
+- [x] **INFRA-06**: Alembic migrations manage all schema changes
 
 ### Review Pipeline
 
@@ -111,11 +111,11 @@
 | Requirement | Phase | Status |
 |-------------|-------|--------|
 | INFRA-01 | Phase 1 | Pending |
-| INFRA-02 | Phase 1 | Pending |
-| INFRA-03 | Phase 1 | Complete |
-| INFRA-04 | Phase 1 | Pending |
-| INFRA-05 | Phase 1 | Pending |
-| INFRA-06 | Phase 1 | Pending |
+| INFRA-02 | Phase 1 | Complete |
+| INFRA-03 | Phase 1 | Pending |
+| INFRA-04 | Phase 1 | Complete |
+| INFRA-05 | Phase 1 | Complete |
+| INFRA-06 | Phase 1 | Complete |
 | PIPE-01 | Phase 2 | Pending |
 | PIPE-02 | Phase 2 | Pending |
 | PIPE-03 | Phase 2 | Pending |
