@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 02-core-review-pipeline/02-01-PLAN.md
-last_updated: "2026-03-12T01:53:49.641Z"
+stopped_at: Completed 02-core-review-pipeline/02-02-PLAN.md
+last_updated: "2026-03-12T01:56:31.337Z"
 last_activity: "2026-03-11 — Plan 01-04 complete: docker-compose.yml, .env.example, .gitignore created; awaiting human smoke-test verification"
 progress:
   total_phases: 5
   completed_phases: 1
   total_plans: 8
-  completed_plans: 5
+  completed_plans: 6
   percent: 10
 ---
 
@@ -51,6 +51,7 @@ Progress: [█░░░░░░░░░] 10%
 
 *Updated after each plan completion*
 | Phase 02-core-review-pipeline P01 | 2 | 2 tasks | 6 files |
+| Phase 02-core-review-pipeline P02 | 5 | 2 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -69,6 +70,9 @@ Recent decisions affecting current work:
 - [Phase 01-04]: *.db pattern in .gitignore safely excludes DB files while leaving .gitkeep unaffected
 - [Phase 02-core-review-pipeline]: mock_anthropic patches at app.services.claude.AsyncAnthropic — canonical patch path for all Phase 2 Claude tests
 - [Phase 02-core-review-pipeline]: @pytest.mark.anyio is correct decorator for async tests (anyio configured in pytest.ini with asyncio_mode=auto)
+- [Phase 02-core-review-pipeline]: Category/Severity as Literal types — strict Pydantic validation, direct string comparison, no .value unwrapping
+- [Phase 02-core-review-pipeline]: chunk_code 1-based offset convention: orchestrator corrects Claude-relative line numbers as actual_line = offset + claude_line - 1
+- [Phase 02-core-review-pipeline]: chunk_code always returns at least [(1, '')] for empty input — orchestrator never needs empty-list handling
 
 ### Pending Todos
 
@@ -81,6 +85,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-12T01:53:49.635Z
-Stopped at: Completed 02-core-review-pipeline/02-01-PLAN.md
+Last session: 2026-03-12T01:56:31.332Z
+Stopped at: Completed 02-core-review-pipeline/02-02-PLAN.md
 Resume file: None
