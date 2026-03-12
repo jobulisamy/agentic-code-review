@@ -42,7 +42,13 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. All five categories (bug, security, style, performance, test_coverage) appear in every review prompt sent to Claude
   4. A file of 1,000 lines submitted to the endpoint is automatically chunked into ≤300-line segments and reviewed without error
   5. If Claude returns an error or malformed response, `POST /api/review` returns a meaningful error message rather than a 500 crash
-**Plans**: TBD
+**Plans**: 4 plans
+
+Plans:
+- [ ] 02-01-PLAN.md — Wave 0: RED test stubs, anthropic dependency, conftest mock fixtures
+- [ ] 02-02-PLAN.md — Wave 1: Pydantic schemas (Finding, ReviewRequest, ReviewResponse) + chunk_code()
+- [ ] 02-03-PLAN.md — Wave 2: Claude service (call_claude_for_review) + pipeline orchestrator (run_review)
+- [ ] 02-04-PLAN.md — Wave 3: POST /api/review router + main.py wiring + human SLA verification
 
 ### Phase 3: React Web UI
 **Goal**: A developer can paste code into a browser, click Review, and see categorized findings — no GitHub App required
@@ -89,7 +95,7 @@ Note: Phase 3 (Web UI) and Phase 4 (GitHub Integration) are independent once Pha
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation | 4/4 | Complete   | 2026-03-12 |
-| 2. Core Review Pipeline | 0/? | Not started | - |
+| 2. Core Review Pipeline | 0/4 | Not started | - |
 | 3. React Web UI | 0/? | Not started | - |
 | 4. GitHub Integration | 0/? | Not started | - |
 | 5. History and Dashboard | 0/? | Not started | - |
