@@ -1,0 +1,39 @@
+services:
+  backend:
+    build: ./backend
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend/app:/app/app          # Hot-reload: source changes reflected instantly
+      - ./backend/alembic:/app/alembic  # Alembic migrations accessible
+      - ./backend/alembic.ini:/app/alembic.ini  # Alembic config
+      - ./backend/data:/app/data        # SQLite persistence across container restarts
+    env_file:
+      - .env                            # Loads all variables from .env at repo root
+    environment:
+      - DATABASE_URL=sqlite+aiosqlite:////app/data/reviews.db
+    command: >
+      uvicorn app.main:app
+      --host 0.0.0.0
+      --port 8000
+      --reload
+      --reload-dir /app/app
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/health"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 15s
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend/src:/app/src         # Hot-reload: React source changes
+      - ./frontend/public:/app/public   # Public assets
+    environment:
+      - VITE_API_URL=http://localhost:8000
+    depends_on:
+      backend:
+        condition: service_healthy      # Frontend waits until backend health check passes
