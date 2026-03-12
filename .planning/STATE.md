@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Checkpoint 01-foundation/01-04-PLAN.md Task 2 (human-verify smoke test)
-last_updated: "2026-03-12T01:30:04.725Z"
+stopped_at: Completed 02-core-review-pipeline/02-01-PLAN.md
+last_updated: "2026-03-12T01:53:49.641Z"
 last_activity: "2026-03-11 — Plan 01-04 complete: docker-compose.yml, .env.example, .gitignore created; awaiting human smoke-test verification"
 progress:
   total_phases: 5
   completed_phases: 1
-  total_plans: 4
-  completed_plans: 4
+  total_plans: 8
+  completed_plans: 5
   percent: 10
 ---
 
@@ -50,6 +50,7 @@ Progress: [█░░░░░░░░░] 10%
 - Trend: Baseline established
 
 *Updated after each plan completion*
+| Phase 02-core-review-pipeline P01 | 2 | 2 tasks | 6 files |
 
 ## Accumulated Context
 
@@ -66,6 +67,8 @@ Recent decisions affecting current work:
 - [Phase 01-04]: No `version:` field in docker-compose.yml — Docker Compose v2 plugin does not require it
 - [Phase 01-04]: DATABASE_URL set inline in environment: block (overrides env_file) to guarantee correct SQLite path
 - [Phase 01-04]: *.db pattern in .gitignore safely excludes DB files while leaving .gitkeep unaffected
+- [Phase 02-core-review-pipeline]: mock_anthropic patches at app.services.claude.AsyncAnthropic — canonical patch path for all Phase 2 Claude tests
+- [Phase 02-core-review-pipeline]: @pytest.mark.anyio is correct decorator for async tests (anyio configured in pytest.ini with asyncio_mode=auto)
 
 ### Pending Todos
 
@@ -78,6 +81,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-11T22:30:30.000Z
-Stopped at: Checkpoint 01-foundation/01-04-PLAN.md Task 2 (human-verify smoke test)
+Last session: 2026-03-12T01:53:49.635Z
+Stopped at: Completed 02-core-review-pipeline/02-01-PLAN.md
 Resume file: None

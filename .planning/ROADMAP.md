@@ -95,7 +95,7 @@ Note: Phase 3 (Web UI) and Phase 4 (GitHub Integration) are independent once Pha
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation | 4/4 | Complete   | 2026-03-12 |
-| 2. Core Review Pipeline | 0/4 | Not started | - |
+| 2. Core Review Pipeline | 1/4 | In Progress|  |
 | 3. React Web UI | 0/? | Not started | - |
 | 4. GitHub Integration | 0/? | Not started | - |
 | 5. History and Dashboard | 0/? | Not started | - |

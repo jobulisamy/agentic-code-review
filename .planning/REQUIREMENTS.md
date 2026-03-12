@@ -16,15 +16,15 @@
 
 ### Review Pipeline
 
-- [ ] **PIPE-01**: Code submitted for review is chunked into segments of ≤ 300 lines
-- [ ] **PIPE-02**: Claude API is called with structured tool_use prompt returning JSON findings
-- [ ] **PIPE-03**: Each finding includes: category, severity, line_start, line_end, title, description, suggestion
-- [ ] **PIPE-04**: All five categories covered in every review prompt: bug, security, style, performance, test_coverage
-- [ ] **PIPE-05**: Severity levels are: error, warning, info
-- [ ] **PIPE-06**: Claude response is parsed into typed Finding objects (not raw JSON strings)
-- [ ] **PIPE-07**: Pipeline handles files up to 1,000 lines (auto-chunking)
+- [x] **PIPE-01**: Code submitted for review is chunked into segments of ≤ 300 lines
+- [x] **PIPE-02**: Claude API is called with structured tool_use prompt returning JSON findings
+- [x] **PIPE-03**: Each finding includes: category, severity, line_start, line_end, title, description, suggestion
+- [x] **PIPE-04**: All five categories covered in every review prompt: bug, security, style, performance, test_coverage
+- [x] **PIPE-05**: Severity levels are: error, warning, info
+- [x] **PIPE-06**: Claude response is parsed into typed Finding objects (not raw JSON strings)
+- [x] **PIPE-07**: Pipeline handles files up to 1,000 lines (auto-chunking)
 - [ ] **PIPE-08**: Full review completes in ≤ 30 seconds end-to-end
-- [ ] **PIPE-09**: Claude API errors are caught and surfaced as meaningful error responses
+- [x] **PIPE-09**: Claude API errors are caught and surfaced as meaningful error responses
 
 ### Web UI — Code Review
 
@@ -68,7 +68,7 @@
 
 ### API
 
-- [ ] **API-01**: `POST /api/review` accepts code + language and returns structured findings
+- [x] **API-01**: `POST /api/review` accepts code + language and returns structured findings
 - [ ] **API-02**: `POST /api/webhook/github` receives and validates GitHub PR events
 - [ ] **API-03**: `GET /api/reviews` returns paginated list of all past reviews
 - [ ] **API-04**: `GET /api/reviews/{id}` returns a single review's full findings
@@ -116,16 +116,16 @@
 | INFRA-04 | Phase 1 | Complete |
 | INFRA-05 | Phase 1 | Complete |
 | INFRA-06 | Phase 1 | Complete |
-| PIPE-01 | Phase 2 | Pending |
-| PIPE-02 | Phase 2 | Pending |
-| PIPE-03 | Phase 2 | Pending |
-| PIPE-04 | Phase 2 | Pending |
-| PIPE-05 | Phase 2 | Pending |
-| PIPE-06 | Phase 2 | Pending |
-| PIPE-07 | Phase 2 | Pending |
+| PIPE-01 | Phase 2 | Complete |
+| PIPE-02 | Phase 2 | Complete |
+| PIPE-03 | Phase 2 | Complete |
+| PIPE-04 | Phase 2 | Complete |
+| PIPE-05 | Phase 2 | Complete |
+| PIPE-06 | Phase 2 | Complete |
+| PIPE-07 | Phase 2 | Complete |
 | PIPE-08 | Phase 2 | Pending |
-| PIPE-09 | Phase 2 | Pending |
-| API-01 | Phase 2 | Pending |
+| PIPE-09 | Phase 2 | Complete |
+| API-01 | Phase 2 | Complete |
 | API-06 | Phase 2 | Pending |
 | WEBUI-01 | Phase 3 | Pending |
 | WEBUI-02 | Phase 3 | Pending |
