@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: planning
-stopped_at: Completed 01-foundation/01-02-PLAN.md
-last_updated: "2026-03-11T22:33:39.880Z"
-last_activity: 2026-03-10 — Roadmap created; all 42 v1 requirements mapped to 5 phases
+stopped_at: Checkpoint 01-foundation/01-04-PLAN.md Task 2 (human-verify)
+last_updated: "2026-03-11T22:30:30.000Z"
+last_activity: 2026-03-11 — Plan 01-04 Task 1 complete: docker-compose + env files created
 progress:
   total_phases: 5
   completed_phases: 0
   total_plans: 0
-  completed_plans: 1
-  percent: 0
+  completed_plans: 2
+  percent: 10
 ---
 
 # Project State
@@ -26,11 +26,11 @@ See: .planning/PROJECT.md (updated 2026-03-10)
 ## Current Position
 
 Phase: 1 of 5 (Foundation)
-Plan: 2 of 4 in current phase
+Plan: 4 of 4 in current phase
 Status: In progress
-Last activity: 2026-03-11 — Plan 01-02 complete: FastAPI backend skeleton, 8 tests green
+Last activity: 2026-03-11 — Plan 01-04 complete: docker-compose.yml, .env.example, .gitignore created; awaiting human smoke-test verification
 
-Progress: [░░░░░░░░░░] 5%
+Progress: [█░░░░░░░░░] 10%
 
 ## Performance Metrics
 
@@ -63,6 +63,9 @@ Recent decisions affecting current work:
 - [Research]: Phase 4 (GitHub) is highest-risk — diff-position mapping (not file line numbers) and HMAC on raw bytes are the two most likely blockers
 - [Phase 01-foundation]: alembic directory must NOT have __init__.py — shadowing the installed package caused import failures
 - [Phase 01-foundation]: alembic/env.py only overrides DATABASE_URL if env var explicitly set — preserves caller-injected URL for test isolation
+- [Phase 01-04]: No `version:` field in docker-compose.yml — Docker Compose v2 plugin does not require it
+- [Phase 01-04]: DATABASE_URL set inline in environment: block (overrides env_file) to guarantee correct SQLite path
+- [Phase 01-04]: *.db pattern in .gitignore safely excludes DB files while leaving .gitkeep unaffected
 
 ### Pending Todos
 
@@ -75,6 +78,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-11T22:33:39.874Z
-Stopped at: Completed 01-foundation/01-02-PLAN.md
+Last session: 2026-03-11T22:30:30.000Z
+Stopped at: Checkpoint 01-foundation/01-04-PLAN.md Task 2 (human-verify smoke test)
 Resume file: None

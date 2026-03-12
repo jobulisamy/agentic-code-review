@@ -12,7 +12,7 @@ Build a senior-engineer-quality automated code review agent from the ground up. 
 
 Decimal phases appear between their surrounding integers in numeric order.
 
-- [ ] **Phase 1: Foundation** - Docker Compose environment, FastAPI skeleton, async SQLAlchemy + Alembic, health endpoint
+- [x] **Phase 1: Foundation** - Docker Compose environment, FastAPI skeleton, async SQLAlchemy + Alembic, health endpoint (completed 2026-03-12)
 - [ ] **Phase 2: Core Review Pipeline** - Chunker, Claude tool_use client, parser, pipeline orchestrator, `POST /api/review`
 - [ ] **Phase 3: React Web UI** - Code editor, findings display, TanStack Query integration, complete paste-and-review demo
 - [ ] **Phase 4: GitHub Integration** - Webhook receipt with HMAC validation, diff-position mapping, inline PR comments, summary comment
@@ -88,7 +88,7 @@ Note: Phase 3 (Web UI) and Phase 4 (GitHub Integration) are independent once Pha
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation | 1/4 | In progress | - |
+| 1. Foundation | 4/4 | Complete   | 2026-03-12 |
 | 2. Core Review Pipeline | 0/? | Not started | - |
 | 3. React Web UI | 0/? | Not started | - |
 | 4. GitHub Integration | 0/? | Not started | - |
