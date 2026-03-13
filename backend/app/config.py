@@ -6,6 +6,8 @@ class Settings(BaseSettings):
     database_url: str = "sqlite+aiosqlite:////app/data/reviews.db"
     db_echo: bool = False
     anthropic_api_key: str = ""
+    groq_api_key: str = ""
+    llm_provider: str = "groq"
     github_webhook_secret: str = ""
 
     model_config = SettingsConfigDict(
