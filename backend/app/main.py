@@ -4,7 +4,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from alembic.config import Config
 from alembic import command
-from app.routers import health
+from app.routers import health, review
 
 
 def _run_migrations():
@@ -29,3 +29,4 @@ async def lifespan(app: FastAPI):
 app = FastAPI(title="Agentic Code Review", lifespan=lifespan)
 
 app.include_router(health.router)
+app.include_router(review.router)
