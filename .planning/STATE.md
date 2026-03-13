@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 02-core-review-pipeline/02-04-PLAN.md
-last_updated: "2026-03-13T01:44:47.362Z"
+stopped_at: Completed 02-core-review-pipeline/02-05-PLAN.md
+last_updated: "2026-03-13T02:14:42.039Z"
 last_activity: "2026-03-11 — Plan 01-04 complete: docker-compose.yml, .env.example, .gitignore created; awaiting human smoke-test verification"
 progress:
   total_phases: 5
-  completed_phases: 1
+  completed_phases: 2
   total_plans: 9
-  completed_plans: 8
+  completed_plans: 9
   percent: 10
 ---
 
@@ -55,6 +55,7 @@ Progress: [█░░░░░░░░░] 10%
 | Phase 02-core-review-pipeline P03 | 8 | 2 tasks | 3 files |
 | Phase 02-core-review-pipeline P04 | 3 | 2 tasks | 2 files |
 | Phase 02-core-review-pipeline P04 | 15 | 3 tasks | 2 files |
+| Phase 02-core-review-pipeline P05 | 9 | 3 tasks | 10 files |
 
 ## Accumulated Context
 
@@ -83,6 +84,9 @@ Recent decisions affecting current work:
 - [Phase 02-core-review-pipeline]: review.router registered after health.router in main.py — preserves health endpoint, no regression
 - [Phase 02-core-review-pipeline]: ReviewPipelineError caught specifically at router boundary, bare Exception propagates naturally
 - [Phase 02-core-review-pipeline]: Live PIPE-08 30s SLA smoke-test deferred to after plan 02-05 adds Groq as default provider; checkpoint approved by user
+- [Phase 02-core-review-pipeline]: ReviewPipelineError and build_review_prompt moved to services/llm.py (canonical); claude.py re-exports both for backward compatibility
+- [Phase 02-core-review-pipeline]: get_provider raises ReviewPipelineError eagerly before chunking when required API key is empty string
+- [Phase 02-core-review-pipeline]: mock_anthropic conftest fixture also patches orchestrator.get_provider so test_review_router.py needs zero changes
 
 ### Pending Todos
 
@@ -95,6 +99,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-13T01:44:47.354Z
-Stopped at: Completed 02-core-review-pipeline/02-04-PLAN.md
+Last session: 2026-03-13T02:14:42.021Z
+Stopped at: Completed 02-core-review-pipeline/02-05-PLAN.md
 Resume file: None

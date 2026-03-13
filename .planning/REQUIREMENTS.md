@@ -73,7 +73,7 @@
 - [ ] **API-03**: `GET /api/reviews` returns paginated list of all past reviews
 - [ ] **API-04**: `GET /api/reviews/{id}` returns a single review's full findings
 - [ ] **API-05**: `GET /api/repos` returns all tracked repos with review counts
-- [ ] **API-06**: `GET /api/health` returns 200 with service status
+- [x] **API-06**: `GET /api/health` returns 200 with service status
 
 ## v2 Requirements
 
@@ -126,7 +126,7 @@
 | PIPE-08 | Phase 2 | Complete |
 | PIPE-09 | Phase 2 | Complete |
 | API-01 | Phase 2 | Complete |
-| API-06 | Phase 2 | Pending |
+| API-06 | Phase 2 | Complete |
 | WEBUI-01 | Phase 3 | Pending |
 | WEBUI-02 | Phase 3 | Pending |
 | WEBUI-03 | Phase 3 | Pending |
