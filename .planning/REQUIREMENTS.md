@@ -26,16 +26,6 @@
 - [x] **PIPE-08**: Full review completes in ≤ 30 seconds end-to-end
 - [x] **PIPE-09**: Claude API errors are caught and surfaced as meaningful error responses
 
-### Web UI — Code Review
-
-- [ ] **WEBUI-01**: User can paste code into a syntax-highlighted editor
-- [ ] **WEBUI-02**: User can select the programming language from a dropdown
-- [ ] **WEBUI-03**: User clicks "Review Code" to trigger the pipeline via `/api/review`
-- [ ] **WEBUI-04**: Results are displayed organized by category (Bug, Security, Style, Performance, Tests)
-- [ ] **WEBUI-05**: Each finding shows: severity badge, line number(s), title, description, and suggestion
-- [ ] **WEBUI-06**: Loading state is shown while review is in progress
-- [ ] **WEBUI-07**: Errors from the backend are displayed to the user
-
 ### GitHub Integration
 
 - [ ] **GH-01**: GitHub App is configured with webhook on `pull_request` events (opened, synchronize)
@@ -98,6 +88,7 @@
 
 | Feature | Reason |
 |---------|--------|
+| Web UI paste-and-review tool | Not the product — GitHub PR review is the core value; removed in favour of dashboard |
 | Cloud deployment | Intentionally local-only for v1 — adds infra complexity |
 | User authentication / multi-user | Single-developer tool; auth adds weeks of scope |
 | Auto-fix suggestions (auto-PR) | Identify-only in v1; fix suggestions require code execution sandboxing |
@@ -127,41 +118,34 @@
 | PIPE-09 | Phase 2 | Complete |
 | API-01 | Phase 2 | Complete |
 | API-06 | Phase 2 | Complete |
-| WEBUI-01 | Phase 3 | Pending |
-| WEBUI-02 | Phase 3 | Pending |
-| WEBUI-03 | Phase 3 | Pending |
-| WEBUI-04 | Phase 3 | Pending |
-| WEBUI-05 | Phase 3 | Pending |
-| WEBUI-06 | Phase 3 | Pending |
-| WEBUI-07 | Phase 3 | Pending |
-| GH-01 | Phase 4 | Pending |
-| GH-02 | Phase 4 | Pending |
-| GH-03 | Phase 4 | Pending |
-| GH-04 | Phase 4 | Pending |
-| GH-05 | Phase 4 | Pending |
-| GH-06 | Phase 4 | Pending |
-| GH-07 | Phase 4 | Pending |
-| GH-08 | Phase 4 | Pending |
-| API-02 | Phase 4 | Pending |
-| DB-01 | Phase 4 | Pending |
-| DB-02 | Phase 4 | Pending |
-| DB-03 | Phase 4 | Pending |
-| HIST-01 | Phase 5 | Pending |
-| HIST-02 | Phase 5 | Pending |
-| HIST-03 | Phase 5 | Pending |
-| DASH-01 | Phase 5 | Pending |
-| DASH-02 | Phase 5 | Pending |
-| DASH-03 | Phase 5 | Pending |
-| DASH-04 | Phase 5 | Pending |
-| API-03 | Phase 5 | Pending |
-| API-04 | Phase 5 | Pending |
-| API-05 | Phase 5 | Pending |
+| GH-01 | Phase 3 | Pending |
+| GH-02 | Phase 3 | Pending |
+| GH-03 | Phase 3 | Pending |
+| GH-04 | Phase 3 | Pending |
+| GH-05 | Phase 3 | Pending |
+| GH-06 | Phase 3 | Pending |
+| GH-07 | Phase 3 | Pending |
+| GH-08 | Phase 3 | Pending |
+| API-02 | Phase 3 | Pending |
+| DB-01 | Phase 3 | Pending |
+| DB-02 | Phase 3 | Pending |
+| DB-03 | Phase 3 | Pending |
+| HIST-01 | Phase 4 | Pending |
+| HIST-02 | Phase 4 | Pending |
+| HIST-03 | Phase 4 | Pending |
+| DASH-01 | Phase 4 | Pending |
+| DASH-02 | Phase 4 | Pending |
+| DASH-03 | Phase 4 | Pending |
+| DASH-04 | Phase 4 | Pending |
+| API-03 | Phase 4 | Pending |
+| API-04 | Phase 4 | Pending |
+| API-05 | Phase 4 | Pending |
 
 **Coverage:**
-- v1 requirements: 42 total
-- Mapped to phases: 42
+- v1 requirements: 35 total (WEBUI-01–07 removed as out of scope)
+- Mapped to phases: 35
 - Unmapped: 0 ✓
 
 ---
 *Requirements defined: 2026-03-10*
-*Last updated: 2026-03-10 after initial definition*
+*Last updated: 2026-03-12 — removed WEBUI-01–07 (paste-and-review UI); GitHub Integration is now Phase 3, History & Dashboard is Phase 4*
