@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 02-core-review-pipeline/02-02-PLAN.md
-last_updated: "2026-03-12T01:56:31.337Z"
+stopped_at: Completed 02-core-review-pipeline/02-03-PLAN.md
+last_updated: "2026-03-13T01:27:42.937Z"
 last_activity: "2026-03-11 — Plan 01-04 complete: docker-compose.yml, .env.example, .gitignore created; awaiting human smoke-test verification"
 progress:
   total_phases: 5
   completed_phases: 1
   total_plans: 8
-  completed_plans: 6
+  completed_plans: 7
   percent: 10
 ---
 
@@ -52,6 +52,7 @@ Progress: [█░░░░░░░░░] 10%
 *Updated after each plan completion*
 | Phase 02-core-review-pipeline P01 | 2 | 2 tasks | 6 files |
 | Phase 02-core-review-pipeline P02 | 5 | 2 tasks | 4 files |
+| Phase 02-core-review-pipeline P03 | 8 | 2 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -73,6 +74,9 @@ Recent decisions affecting current work:
 - [Phase 02-core-review-pipeline]: Category/Severity as Literal types — strict Pydantic validation, direct string comparison, no .value unwrapping
 - [Phase 02-core-review-pipeline]: chunk_code 1-based offset convention: orchestrator corrects Claude-relative line numbers as actual_line = offset + claude_line - 1
 - [Phase 02-core-review-pipeline]: chunk_code always returns at least [(1, '')] for empty input — orchestrator never needs empty-list handling
+- [Phase 02-core-review-pipeline]: ReviewPipelineError defined in app.services.claude and re-exported from orchestrator — avoids circular imports
+- [Phase 02-core-review-pipeline]: AsyncAnthropic instantiated per-call in call_claude_for_review — enables reliable unittest.mock.patch in tests
+- [Phase 02-core-review-pipeline]: asyncio.gather with return_exceptions=True — failed chunks raise ReviewPipelineError without discarding successful chunk results
 
 ### Pending Todos
 
@@ -85,6 +89,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-12T01:56:31.332Z
-Stopped at: Completed 02-core-review-pipeline/02-02-PLAN.md
+Last session: 2026-03-13T01:27:42.932Z
+Stopped at: Completed 02-core-review-pipeline/02-03-PLAN.md
 Resume file: None

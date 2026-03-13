@@ -23,7 +23,7 @@
 - [x] **PIPE-05**: Severity levels are: error, warning, info
 - [x] **PIPE-06**: Claude response is parsed into typed Finding objects (not raw JSON strings)
 - [x] **PIPE-07**: Pipeline handles files up to 1,000 lines (auto-chunking)
-- [ ] **PIPE-08**: Full review completes in ≤ 30 seconds end-to-end
+- [x] **PIPE-08**: Full review completes in ≤ 30 seconds end-to-end
 - [x] **PIPE-09**: Claude API errors are caught and surfaced as meaningful error responses
 
 ### Web UI — Code Review
@@ -123,7 +123,7 @@
 | PIPE-05 | Phase 2 | Complete |
 | PIPE-06 | Phase 2 | Complete |
 | PIPE-07 | Phase 2 | Complete |
-| PIPE-08 | Phase 2 | Pending |
+| PIPE-08 | Phase 2 | Complete |
 | PIPE-09 | Phase 2 | Complete |
 | API-01 | Phase 2 | Complete |
 | API-06 | Phase 2 | Pending |
