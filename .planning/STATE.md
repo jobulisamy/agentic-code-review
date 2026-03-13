@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 02-core-review-pipeline/02-03-PLAN.md
-last_updated: "2026-03-13T01:27:42.937Z"
+stopped_at: Completed 02-core-review-pipeline/02-04-PLAN.md (awaiting human verify checkpoint for PIPE-08 30s SLA)
+last_updated: "2026-03-13T01:31:19.233Z"
 last_activity: "2026-03-11 — Plan 01-04 complete: docker-compose.yml, .env.example, .gitignore created; awaiting human smoke-test verification"
 progress:
   total_phases: 5
-  completed_phases: 1
+  completed_phases: 2
   total_plans: 8
-  completed_plans: 7
+  completed_plans: 8
   percent: 10
 ---
 
@@ -53,6 +53,7 @@ Progress: [█░░░░░░░░░] 10%
 | Phase 02-core-review-pipeline P01 | 2 | 2 tasks | 6 files |
 | Phase 02-core-review-pipeline P02 | 5 | 2 tasks | 4 files |
 | Phase 02-core-review-pipeline P03 | 8 | 2 tasks | 3 files |
+| Phase 02-core-review-pipeline P04 | 3 | 2 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -77,6 +78,7 @@ Recent decisions affecting current work:
 - [Phase 02-core-review-pipeline]: ReviewPipelineError defined in app.services.claude and re-exported from orchestrator — avoids circular imports
 - [Phase 02-core-review-pipeline]: AsyncAnthropic instantiated per-call in call_claude_for_review — enables reliable unittest.mock.patch in tests
 - [Phase 02-core-review-pipeline]: asyncio.gather with return_exceptions=True — failed chunks raise ReviewPipelineError without discarding successful chunk results
+- [Phase 02-core-review-pipeline]: review.router registered after health.router in main.py; ReviewPipelineError caught specifically, bare Exception propagates naturally
 
 ### Pending Todos
 
@@ -89,6 +91,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-13T01:27:42.932Z
-Stopped at: Completed 02-core-review-pipeline/02-03-PLAN.md
+Last session: 2026-03-13T01:31:19.228Z
+Stopped at: Completed 02-core-review-pipeline/02-04-PLAN.md (awaiting human verify checkpoint for PIPE-08 30s SLA)
 Resume file: None
