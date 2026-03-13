@@ -32,8 +32,33 @@ def mock_claude_response():
 
 
 @pytest.fixture
+def mock_provider():
+    """Mock LLM provider that returns one sample finding per call_for_review."""
+    provider = AsyncMock()
+    provider.call_for_review = AsyncMock(return_value=[
+        {
+            "category": "bug",
+            "severity": "error",
+            "line_start": 1,
+            "line_end": 1,
+            "title": "test finding",
+            "description": "test description",
+            "suggestion": "test suggestion",
+        }
+    ])
+    return provider
+
+
+@pytest.fixture
 def mock_anthropic(mock_claude_response):
-    """Patch AsyncAnthropic so no real API calls are made in tests."""
+    """Patch AsyncAnthropic so no real API calls are made in tests.
+
+    Also patches app.pipeline.orchestrator.get_provider to return a ClaudeProvider
+    backed by the mocked AsyncAnthropic, so router tests work without needing
+    real API keys in the environment.
+    """
+    from app.services.claude import ClaudeProvider
+
     sample_findings = [
         {
             "category": "bug",
@@ -51,4 +76,6 @@ def mock_anthropic(mock_claude_response):
             return_value=mock_claude_response(sample_findings)
         )
         mock_cls.return_value = instance
-        yield instance
+        claude_provider = ClaudeProvider(api_key="test-key")
+        with patch("app.pipeline.orchestrator.get_provider", return_value=claude_provider):
+            yield instance
