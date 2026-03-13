@@ -60,7 +60,13 @@ Plans:
   3. Findings are posted as inline review comments on the correct diff lines — not file-absolute line numbers — with no 422 errors from GitHub
   4. A summary comment appears at the top of the PR showing total issues, counts per category, severity counts, and an APPROVE or REQUEST CHANGES verdict
   5. Every completed PR review is saved to SQLite with repo association, PR number, file path, and findings JSON
-**Plans**: TBD
+**Plans**: 4 plans
+
+Plans:
+- [ ] 03-01-PLAN.md — Wave 1: RED test stubs + Repo/Review models + Alembic migration 0002
+- [ ] 03-02-PLAN.md — Wave 2: Settings extensions + POST /api/webhook/github (HMAC + BackgroundTasks stub)
+- [ ] 03-03-PLAN.md — Wave 3: GitHub service (token fetch, diff fetch, diff-position, comment formatting, review submission)
+- [ ] 03-04-PLAN.md — Wave 4: run_webhook_review full implementation + DB persistence + live verification checkpoint
 
 ### Phase 4: History and Dashboard
 **Goal**: The agent learns from past reviews and a developer can explore the full history of what was found
@@ -82,5 +88,5 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 |-------|----------------|--------|-----------|
 | 1. Foundation | 4/4 | Complete   | 2026-03-12 |
 | 2. Core Review Pipeline | 5/5 | Complete   | 2026-03-13 |
-| 3. GitHub Integration | 0/? | Not started | - |
+| 3. GitHub Integration | 0/4 | Not started | - |
 | 4. History and Dashboard | 0/? | Not started | - |
