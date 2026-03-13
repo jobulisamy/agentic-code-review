@@ -39,6 +39,7 @@ key-files:
 key-decisions:
   - "review.router registered after health.router in main.py — preserves health endpoint, no regression"
   - "ReviewPipelineError caught specifically, bare Exception propagates naturally — avoids masking unexpected errors"
+  - "Live PIPE-08 30s SLA smoke-test deferred to after plan 02-05 adds Groq as default provider; checkpoint approved by user"
 
 patterns-established:
   - "Pattern: Router catches domain-specific pipeline errors (ReviewPipelineError) and maps to HTTP 500 with str(exc) as detail"
@@ -60,7 +61,7 @@ completed: 2026-03-13
 - **Duration:** 3 min
 - **Started:** 2026-03-13T01:29:00Z
 - **Completed:** 2026-03-13T01:30:13Z
-- **Tasks:** 2 automated + 1 checkpoint
+- **Tasks:** 3 (2 automated + 1 human-verify checkpoint — approved)
 - **Files modified:** 2
 
 ## Accomplishments
@@ -94,15 +95,15 @@ None - plan executed exactly as written. The main.py changes (Task 2) were appli
 None - all tests passed immediately. The pre-written Wave 0 test fixtures (client, mock_anthropic) worked correctly with the new router.
 
 ## User Setup Required
-Task 3 is a `checkpoint:human-verify` requiring a live ANTHROPIC_API_KEY to verify the 30-second SLA (PIPE-08). See task details:
-1. Set ANTHROPIC_API_KEY in backend/.env
-2. Start: `docker-compose up backend`
-3. POST to http://localhost:8000/api/review and time the response
+None — ANTHROPIC_API_KEY already configured in backend/.env. Live endpoint verified by user at checkpoint (Task 3 approved).
+
+Note: PIPE-08 full SLA re-verification will be performed after plan 02-05 switches Groq in as default provider.
 
 ## Next Phase Readiness
 - Phase 2 core pipeline is fully functional end-to-end (HTTP -> orchestrator -> Claude -> typed findings)
-- Awaiting human verification of PIPE-08 (30s SLA) before marking Phase 2 complete
-- Phase 3 (LLM providers) can begin implementation of multi-provider abstraction on this foundation
+- Human checkpoint approved — Task 3 complete, plan 02-04 fully done
+- Plan 02-05 (multi-provider LLM abstraction with Groq) can proceed immediately
+- After 02-05, re-verify PIPE-08 30s SLA with Groq as provider
 
 ---
 *Phase: 02-core-review-pipeline*

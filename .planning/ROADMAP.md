@@ -13,7 +13,7 @@ Build a senior-engineer-quality automated code review agent from the ground up. 
 Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Foundation** - Docker Compose environment, FastAPI skeleton, async SQLAlchemy + Alembic, health endpoint (completed 2026-03-12)
-- [x] **Phase 2: Core Review Pipeline** - Chunker, Claude tool_use client, parser, pipeline orchestrator, `POST /api/review` (completed 2026-03-13)
+- [ ] **Phase 2: Core Review Pipeline** - Chunker, LLM provider abstraction (Groq default / Claude fallback), pipeline orchestrator, `POST /api/review`
 - [ ] **Phase 3: React Web UI** - Code editor, findings display, TanStack Query integration, complete paste-and-review demo
 - [ ] **Phase 4: GitHub Integration** - Webhook receipt with HMAC validation, diff-position mapping, inline PR comments, summary comment
 - [ ] **Phase 5: History and Dashboard** - Per-repo history injection into prompts, review dashboard with stats, read-path API endpoints
@@ -42,13 +42,14 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. All five categories (bug, security, style, performance, test_coverage) appear in every review prompt sent to Claude
   4. A file of 1,000 lines submitted to the endpoint is automatically chunked into ≤300-line segments and reviewed without error
   5. If Claude returns an error or malformed response, `POST /api/review` returns a meaningful error message rather than a 500 crash
-**Plans**: 4 plans
+**Plans**: 5 plans
 
 Plans:
-- [ ] 02-01-PLAN.md — Wave 0: RED test stubs, anthropic dependency, conftest mock fixtures
-- [ ] 02-02-PLAN.md — Wave 1: Pydantic schemas (Finding, ReviewRequest, ReviewResponse) + chunk_code()
-- [ ] 02-03-PLAN.md — Wave 2: Claude service (call_claude_for_review) + pipeline orchestrator (run_review)
+- [x] 02-01-PLAN.md — Wave 1: RED test stubs, anthropic dependency, conftest mock fixtures
+- [x] 02-02-PLAN.md — Wave 1: Pydantic schemas (Finding, ReviewRequest, ReviewResponse) + chunk_code()
+- [x] 02-03-PLAN.md — Wave 2: Claude service (ClaudeProvider) + pipeline orchestrator (run_review)
 - [ ] 02-04-PLAN.md — Wave 3: POST /api/review router + main.py wiring + human SLA verification
+- [ ] 02-05-PLAN.md — Wave 4: LLM provider abstraction (Groq default / Claude fallback)
 
 ### Phase 3: React Web UI
 **Goal**: A developer can paste code into a browser, click Review, and see categorized findings — no GitHub App required
@@ -95,7 +96,7 @@ Note: Phase 3 (Web UI) and Phase 4 (GitHub Integration) are independent once Pha
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation | 4/4 | Complete   | 2026-03-12 |
-| 2. Core Review Pipeline | 4/4 | Complete   | 2026-03-13 |
+| 2. Core Review Pipeline | 4/5 | In Progress|  |
 | 3. React Web UI | 0/? | Not started | - |
 | 4. GitHub Integration | 0/? | Not started | - |
 | 5. History and Dashboard | 0/? | Not started | - |
