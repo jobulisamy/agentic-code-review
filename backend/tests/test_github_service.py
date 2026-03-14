@@ -99,6 +99,76 @@ diff --git a/src/app.py b/src/app.py
  def bar():
 """
 
+# ── Task: parse_diff_stats ─────────────────────────────────────────────
+
+STATS_DIFF = """\
+diff --git a/backend/app/routers/webhook.py b/backend/app/routers/webhook.py
+--- a/backend/app/routers/webhook.py
++++ b/backend/app/routers/webhook.py
+@@ -1,3 +1,5 @@
+ def foo():
+-    return 1
++    return 2
++    # new comment
++    pass
+
+diff --git a/backend/app/services/github.py b/backend/app/services/github.py
+--- a/backend/app/services/github.py
++++ b/backend/app/services/github.py
+@@ -0,0 +1,2 @@
++def bar():
++    pass
+"""
+
+
+def test_parse_diff_stats_counts():
+    """parse_diff_stats returns correct +/- counts per file."""
+    from app.services.github import parse_diff_stats
+
+    stats = parse_diff_stats(STATS_DIFF)
+
+    assert len(stats) == 2
+    paths = [s["path"] for s in stats]
+    assert "backend/app/routers/webhook.py" in paths
+    assert "backend/app/services/github.py" in paths
+
+    webhook_stat = next(s for s in stats if "webhook" in s["path"])
+    assert webhook_stat["additions"] == 3
+    assert webhook_stat["deletions"] == 1
+
+    github_stat = next(s for s in stats if "github" in s["path"])
+    assert github_stat["additions"] == 2
+    assert github_stat["deletions"] == 0
+
+
+def test_parse_diff_stats_empty():
+    """parse_diff_stats returns empty list for empty diff string."""
+    from app.services.github import parse_diff_stats
+
+    assert parse_diff_stats("") == []
+
+
+def test_parse_diff_stats_renamed_uses_target_path():
+    """parse_diff_stats uses target (new) path for renamed files."""
+    from app.services.github import parse_diff_stats
+
+    rename_diff = """\
+diff --git a/old_name.py b/new_name.py
+similarity index 80%
+rename from old_name.py
+rename to new_name.py
+--- a/old_name.py
++++ b/new_name.py
+@@ -1,2 +1,3 @@
+ def foo():
+-    pass
++    return 1
++    # added
+"""
+    stats = parse_diff_stats(rename_diff)
+    assert len(stats) == 1
+    assert stats[0]["path"] == "new_name.py"
+
 
 @pytest.mark.anyio
 async def test_comment_positions():

@@ -16,12 +16,24 @@ caching of clients or tokens across calls (per GH-08).
 from __future__ import annotations
 
 import time
+from dataclasses import dataclass
 
 import httpx
 import jwt
 from unidiff import PatchSet
 
 from app.schemas.review import Finding
+
+
+@dataclass
+class FileFinding:
+    """A finding paired with the file it came from.
+
+    Used by format_summary_comment to render per-file context in the
+    Critical Issues section without modifying the Finding schema.
+    """
+    finding: "Finding"
+    file_path: str
 
 
 # ── Authentication ──────────────────────────────────────────────────────────
@@ -111,6 +123,27 @@ def build_diff_comment_positions(diff_text: str) -> dict[tuple[str, int], int]:
                 if line.target_line_no is not None:
                     positions[(path, line.target_line_no)] = line.target_line_no
     return positions
+
+
+def parse_diff_stats(diff_text: str) -> list[dict]:
+    """Parse a unified diff and return per-file addition/deletion counts.
+
+    Returns a list of {"path": str, "additions": int, "deletions": int}
+    dicts in diff order, one entry per changed file. Uses patched_file.path
+    (the target/new path) for all files including renames — consistent with
+    build_diff_comment_positions.
+
+    Returns an empty list for an empty or unparseable diff.
+    """
+    if not diff_text.strip():
+        return []
+    patch = PatchSet(diff_text)
+    stats = []
+    for pf in patch:
+        additions = sum(1 for hunk in pf for line in hunk if line.is_added)
+        deletions = sum(1 for hunk in pf for line in hunk if line.is_removed)
+        stats.append({"path": pf.path, "additions": additions, "deletions": deletions})
+    return stats
 
 
 # ── Comment construction ────────────────────────────────────────────────────
