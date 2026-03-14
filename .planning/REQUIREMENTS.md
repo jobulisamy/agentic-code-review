@@ -29,8 +29,8 @@
 ### GitHub Integration
 
 - [ ] **GH-01**: GitHub App is configured with webhook on `pull_request` events (opened, synchronize)
-- [ ] **GH-02**: Webhook endpoint validates HMAC-SHA256 signature before processing
-- [ ] **GH-03**: Webhook endpoint returns HTTP 200 immediately; pipeline runs in background
+- [x] **GH-02**: Webhook endpoint validates HMAC-SHA256 signature before processing
+- [x] **GH-03**: Webhook endpoint returns HTTP 200 immediately; pipeline runs in background
 - [ ] **GH-04**: PR diff is fetched from GitHub API and passed through the review pipeline
 - [ ] **GH-05**: Findings are posted as inline review comments on the correct diff lines
 - [ ] **GH-06**: Diff position (not file line number) is used for inline comment placement
@@ -59,7 +59,7 @@
 ### API
 
 - [x] **API-01**: `POST /api/review` accepts code + language and returns structured findings
-- [ ] **API-02**: `POST /api/webhook/github` receives and validates GitHub PR events
+- [x] **API-02**: `POST /api/webhook/github` receives and validates GitHub PR events
 - [ ] **API-03**: `GET /api/reviews` returns paginated list of all past reviews
 - [ ] **API-04**: `GET /api/reviews/{id}` returns a single review's full findings
 - [ ] **API-05**: `GET /api/repos` returns all tracked repos with review counts
@@ -119,14 +119,14 @@
 | API-01 | Phase 2 | Complete |
 | API-06 | Phase 2 | Complete |
 | GH-01 | Phase 3 | Pending |
-| GH-02 | Phase 3 | Pending |
-| GH-03 | Phase 3 | Pending |
+| GH-02 | Phase 3 | Complete |
+| GH-03 | Phase 3 | Complete |
 | GH-04 | Phase 3 | Pending |
 | GH-05 | Phase 3 | Pending |
 | GH-06 | Phase 3 | Pending |
 | GH-07 | Phase 3 | Pending |
 | GH-08 | Phase 3 | Pending |
-| API-02 | Phase 3 | Pending |
+| API-02 | Phase 3 | Complete |
 | DB-01 | Phase 3 | Complete |
 | DB-02 | Phase 3 | Complete |
 | DB-03 | Phase 3 | Complete |

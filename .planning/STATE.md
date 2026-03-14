@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: planning
-stopped_at: Completed 03-01-PLAN.md
-last_updated: "2026-03-14T00:03:56.356Z"
+stopped_at: Completed 03-02-PLAN.md
+last_updated: "2026-03-14T00:09:11.436Z"
 last_activity: "2026-03-12 — Roadmap restructured: Web UI paste tool removed; GitHub Integration is now Phase 3"
 progress:
   total_phases: 4
   completed_phases: 2
   total_plans: 13
-  completed_plans: 10
+  completed_plans: 11
   percent: 50
 ---
 
@@ -56,6 +56,7 @@ Progress: [██████░░░░] 50%
 | Phase 02-core-review-pipeline P04 | 15 | 3 tasks | 2 files |
 | Phase 02-core-review-pipeline P05 | 9 | 3 tasks | 10 files |
 | Phase 03-github-integration P01 | 5 | 2 tasks | 6 files |
+| Phase 03-github-integration P02 | 3 | 2 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -90,6 +91,8 @@ Recent decisions affecting current work:
 - [Phase 03-github-integration]: Deferred imports inside test stubs (imports inside function bodies): files always collectable, RED state with runtime ModuleNotFoundError
 - [Phase 03-github-integration]: Single shared Base from app.models.repo: all models share one DeclarativeBase metadata for Alembic autogenerate correctness
 - [Phase 03-github-integration]: Explicit op.create_table in migration 0002 (not autogenerate): deterministic and portable without needing full app environment
+- [Phase 03-github-integration]: HMAC validation on raw request bytes before JSON parsing — avoids key-ordering divergence; HTTPException 403 with no body on HMAC failure
+- [Phase 03-github-integration]: test_db_writes RED stub intentional until Plan 04; test patching via get_settings override (not lru_cache clear) for webhook secret in tests
 
 ### Pending Todos
 
@@ -102,7 +105,7 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-14T00:03:56.352Z
-Stopped at: Completed 03-01-PLAN.md
+Last session: 2026-03-14T00:09:11.429Z
+Stopped at: Completed 03-02-PLAN.md
 Resume file: None
 Next: /gsd:discuss-phase 3 (or /gsd:plan-phase 3 to skip discussion)
