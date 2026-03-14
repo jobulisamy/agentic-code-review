@@ -16,12 +16,24 @@ caching of clients or tokens across calls (per GH-08).
 from __future__ import annotations
 
 import time
+from dataclasses import dataclass
 
 import httpx
 import jwt
 from unidiff import PatchSet
 
 from app.schemas.review import Finding
+
+
+@dataclass
+class FileFinding:
+    """A finding paired with the file it came from.
+
+    Used by format_summary_comment to render per-file context in the
+    Critical Issues section without modifying the Finding schema.
+    """
+    finding: "Finding"
+    file_path: str
 
 
 # ── Authentication ──────────────────────────────────────────────────────────
@@ -113,6 +125,27 @@ def build_diff_comment_positions(diff_text: str) -> dict[tuple[str, int], int]:
     return positions
 
 
+def parse_diff_stats(diff_text: str) -> list[dict]:
+    """Parse a unified diff and return per-file addition/deletion counts.
+
+    Returns a list of {"path": str, "additions": int, "deletions": int}
+    dicts in diff order, one entry per changed file. Uses patched_file.path
+    (the target/new path) for all files including renames — consistent with
+    build_diff_comment_positions.
+
+    Returns an empty list for an empty or unparseable diff.
+    """
+    if not diff_text.strip():
+        return []
+    patch = PatchSet(diff_text)
+    stats = []
+    for pf in patch:
+        additions = sum(1 for hunk in pf for line in hunk if line.is_added)
+        deletions = sum(1 for hunk in pf for line in hunk if line.is_removed)
+        stats.append({"path": pf.path, "additions": additions, "deletions": deletions})
+    return stats
+
+
 # ── Comment construction ────────────────────────────────────────────────────
 
 def finding_to_comment(
@@ -153,53 +186,119 @@ def finding_to_comment(
 
 # ── Summary comment formatting ──────────────────────────────────────────────
 
-def format_summary_comment(findings: list[Finding]) -> tuple[str, str]:
+def format_summary_comment(
+    file_findings: list["FileFinding"],
+    diff_stats: list[dict],
+    pr_title: str,
+) -> tuple[str, str]:
     """Format the PR-level summary comment and determine the review verdict.
 
-    Returns a (summary_body, event) tuple where:
-    - summary_body: Markdown string with the locked bullet-list format
+    Returns (summary_body, event) where:
+    - summary_body: Markdown with PR title, changes, critical issues, findings
     - event: "REQUEST_CHANGES" if any finding has severity "error", else "APPROVE"
 
-    All findings are counted in the summary display. Verdict is "REQUEST_CHANGES"
-    when any finding has severity == "error", "APPROVE" otherwise (including zero
-    findings).
+    Verdict is NOT included in the body text — it is submitted only as the
+    GitHub review event field.
     """
-    # Count per category
-    counts: dict[str, int] = {
-        "bug": 0,
-        "security": 0,
-        "style": 0,
-        "performance": 0,
-        "test_coverage": 0,
+    findings = [ff.finding for ff in file_findings]
+
+    # ── Counts ───────────────────────────────────────────────────────────────
+    category_counts: dict[str, int] = {
+        "bug": 0, "security": 0, "style": 0, "performance": 0, "test_coverage": 0,
     }
     severity_counts = {"error": 0, "warning": 0, "info": 0}
 
     for f in findings:
-        if f.category in counts:
-            counts[f.category] += 1
+        if f.category in category_counts:
+            category_counts[f.category] += 1
         if f.severity in severity_counts:
             severity_counts[f.severity] += 1
 
     total = len(findings)
     has_error = severity_counts["error"] > 0
     event = "REQUEST_CHANGES" if has_error else "APPROVE"
-    verdict_line = "❌ REQUEST CHANGES" if has_error else "✅ APPROVE"
 
-    body = (
-        "## AI Code Review\n"
-        "\n"
-        f"**Findings ({total} total)**\n"
-        f"- Bug: {counts['bug']}\n"
-        f"- Security: {counts['security']}\n"
-        f"- Style: {counts['style']}\n"
-        f"- Performance: {counts['performance']}\n"
-        f"- Test Coverage: {counts['test_coverage']}\n"
-        "\n"
-        f"Severity: {severity_counts['error']} error · {severity_counts['warning']} warnings · {severity_counts['info']} info\n"
-        "\n"
-        f"{verdict_line}"
+    # ── PR title ─────────────────────────────────────────────────────────────
+    lines: list[str] = [
+        "## AI Code Review",
+        "",
+        f"**{pr_title}**",
+        "",
+        "---",
+        "",
+    ]
+
+    # ── Changes section ───────────────────────────────────────────────────────
+    lines.append("**Changes**")
+    if not diff_stats:
+        lines.append("No file changes detected.")
+    else:
+        for stat in sorted(diff_stats, key=lambda s: s["path"]):
+            lines.append(f"{stat['path']}  +{stat['additions']} \u2212{stat['deletions']}")
+        total_add = sum(s["additions"] for s in diff_stats)
+        total_del = sum(s["deletions"] for s in diff_stats)
+        lines.append(f"{len(diff_stats)} files \u00b7 +{total_add} \u2212{total_del} lines total")
+    lines.append("")
+
+    # ── Critical Issues section (omit if no error/warning findings) ───────────
+    critical = [ff for ff in file_findings if ff.finding.severity in ("error", "warning")]
+    if critical:
+        _severity_weight = {"error": 0, "warning": 1}
+        critical_sorted = sorted(
+            critical,
+            key=lambda ff: (
+                _severity_weight.get(ff.finding.severity, 2),
+                ff.file_path,
+                ff.finding.line_start,
+            ),
+        )[:3]
+
+        lines.append("**Critical Issues**")
+        for ff in critical_sorted:
+            loc = f"{ff.file_path}"
+            if ff.finding.line_start > 0:
+                loc += f":{ff.finding.line_start}"
+            lines.append(f"\u2022 [{ff.finding.category}] {ff.finding.title} \u2014 {loc}")
+        lines.append("")
+
+    # ── Findings section ──────────────────────────────────────────────────────
+    lines.append(f"**Findings ({total} total)**")
+
+    # Prose summary
+    E = severity_counts["error"]
+    W = severity_counts["warning"]
+    I = severity_counts["info"]
+
+    if total == 0:
+        prose = "No issues found."
+    elif E > 0:
+        prose = f"{E} error(s) require changes."
+        if W + I > 0:
+            prose += f" {W} warning(s) and {I} info finding(s) noted."
+    elif W > 0:
+        prose = f"No errors found. {W} warning(s) noted."
+        if I > 0:
+            prose += f" {I} info finding(s) noted."
+    else:
+        prose = f"{I} info finding(s) noted."
+
+    lines.append(prose)
+
+    # Category breakdown
+    lines.append(
+        f"Bug: {category_counts['bug']} \u00b7 "
+        f"Security: {category_counts['security']} \u00b7 "
+        f"Style: {category_counts['style']} \u00b7 "
+        f"Performance: {category_counts['performance']} \u00b7 "
+        f"Test Coverage: {category_counts['test_coverage']}"
     )
 
+    # Severity breakdown
+    lines.append(
+        f"Severity: {E} error(s) \u00b7 {W} warning(s) \u00b7 {I} info"
+    )
+
+    body = "\n".join(lines)
     return body, event
 
 

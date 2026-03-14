@@ -12,9 +12,11 @@ from app.models.repo import Repo
 from app.models.review import Review
 from app.pipeline.orchestrator import run_review, ReviewPipelineError
 from app.services.github import (
+    FileFinding,
     get_installation_token,
     fetch_pr_diff,
     build_diff_comment_positions,
+    parse_diff_stats,
     finding_to_comment,
     format_summary_comment,
     submit_review,
@@ -76,6 +78,7 @@ async def run_webhook_review(payload: dict, settings: Settings) -> None:
         pr_number = payload["pull_request"]["number"]
         head_sha = payload["pull_request"]["head"]["sha"]
         installation_id = payload["installation"]["id"]
+        pr_title = payload["pull_request"]["title"]
     except (KeyError, TypeError) as exc:
         logger.error("run_webhook_review: malformed payload — missing field: %s", exc)
         return
@@ -98,10 +101,10 @@ async def run_webhook_review(payload: dict, settings: Settings) -> None:
         return
 
     # Step 3: Parse diff; build valid comment positions map
-    patch = PatchSet(diff_text)
-    valid_positions = build_diff_comment_positions(diff_text)
-
     try:
+        patch = PatchSet(diff_text)
+        valid_positions = build_diff_comment_positions(diff_text)
+        diff_stats = parse_diff_stats(diff_text)
         # Step 4: Upsert Repo record; get repo_id for DB writes
         async with AsyncSessionLocal() as session:
             result = await session.execute(
@@ -168,8 +171,13 @@ async def run_webhook_review(payload: dict, settings: Settings) -> None:
                 inline_comments.append(comment)
 
     # Step 7: Format summary and submit review as a single Reviews API call
-    all_findings = [f for _, findings in file_results for f in findings]
-    summary_body, event = format_summary_comment(all_findings)
+    # Build FileFinding objects pairing each finding with its file path
+    file_findings = [
+        FileFinding(finding=f, file_path=file_path)
+        for file_path, findings in file_results
+        for f in findings
+    ]
+    summary_body, event = format_summary_comment(file_findings, diff_stats, pr_title)
     try:
         await submit_review(
             owner, repo_name, pr_number, head_sha,

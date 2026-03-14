@@ -40,6 +40,7 @@ def _make_full_payload(action: str = "opened") -> dict:
         "pull_request": {
             "number": 42,
             "head": {"sha": "abc123def456"},
+            "title": "Test PR title",
         },
         "repository": {
             "id": 99001,
