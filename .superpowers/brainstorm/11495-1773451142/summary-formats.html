@@ -1,0 +1,57 @@
+<h2>Summary Comment Format Options</h2>
+<p class="subtitle">Pick the layout that feels most useful in a GitHub PR review</p>
+
+<div class="cards">
+
+  <div class="card" data-choice="a" onclick="toggleSelect(this)">
+    <div class="card-body">
+      <h3>A · Narrative-first</h3>
+      <p>LLM writes a 2-3 sentence prose summary of the issues. Files changed extracted from diff.</p>
+      <div style="background:#0d1117;border-radius:6px;padding:12px;margin-top:10px;font-size:12px;font-family:monospace;color:#e6edf3;text-align:left;line-height:1.6">
+        <span style="color:#58a6ff;font-weight:bold">## AI Code Review</span><br><br>
+        This PR adds webhook HMAC validation and a GitHub service module. Two security findings require changes before merge; the remaining issues are style and coverage suggestions.<br><br>
+        <span style="color:#8b949e">**Changes**</span><br>
+        • <span style="color:#7ee787">backend/app/routers/webhook.py</span> +85 −12<br>
+        • <span style="color:#7ee787">backend/app/services/github.py</span> +220 −0<br><br>
+        <span style="color:#8b949e">**Findings (8 total)**</span><br>
+        Bug: 1 · Security: 2 · Style: 3 · Perf: 1 · Tests: 1<br>
+        Severity: 2 errors · 4 warnings · 2 info<br><br>
+        <span style="color:#f85149">❌ REQUEST CHANGES</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" data-choice="b" onclick="toggleSelect(this)">
+    <div class="card-body">
+      <h3>B · Structured highlights</h3>
+      <p>Top N critical issues surfaced explicitly. Changes shown as file table. Good for large PRs.</p>
+      <div style="background:#0d1117;border-radius:6px;padding:12px;margin-top:10px;font-size:12px;font-family:monospace;color:#e6edf3;text-align:left;line-height:1.6">
+        <span style="color:#58a6ff;font-weight:bold">## AI Code Review</span><br><br>
+        <span style="color:#8b949e">**Changes** — 2 files · +305 −12 lines</span><br><br>
+        <span style="color:#8b949e">**Critical Issues**</span><br>
+        🔴 [security] Webhook secret logged in plaintext — webhook.py:45<br>
+        🔴 [bug] Token not refreshed on 401 — github.py:89<br><br>
+        <span style="color:#8b949e">**All Findings (8 total)**</span><br>
+        Bug: 1 · Security: 2 · Style: 3 · Perf: 1 · Tests: 1<br>
+        Severity: 2 errors · 4 warnings · 2 info<br><br>
+        <span style="color:#f85149">❌ REQUEST CHANGES</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" data-choice="c" onclick="toggleSelect(this)">
+    <div class="card-body">
+      <h3>C · Compact + programmatic</h3>
+      <p>No LLM summary — a short sentence auto-generated from counts. Minimal, fast, no extra API calls.</p>
+      <div style="background:#0d1117;border-radius:6px;padding:12px;margin-top:10px;font-size:12px;font-family:monospace;color:#e6edf3;text-align:left;line-height:1.6">
+        <span style="color:#58a6ff;font-weight:bold">## AI Code Review</span><br><br>
+        <span style="color:#8b949e">**2 files reviewed · 8 findings**</span><br><br>
+        2 errors and 4 warnings need attention. 3 style suggestions included.<br><br>
+        <span style="color:#8b949e">| Bug | Security | Style | Perf | Tests |</span><br>
+        <span style="color:#8b949e">| 1   | 2        | 3     | 1    | 1     |</span><br><br>
+        <span style="color:#f85149">❌ REQUEST CHANGES</span>
+      </div>
+    </div>
+  </div>
+
+</div>

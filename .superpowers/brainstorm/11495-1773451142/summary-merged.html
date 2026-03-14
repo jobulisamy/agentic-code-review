@@ -1,0 +1,36 @@
+<h2>Merged Format — A + B</h2>
+<p class="subtitle">Does this feel right? Let me know what to tweak.</p>
+
+<div style="max-width:680px;margin:0 auto">
+  <div class="mockup">
+    <div class="mockup-header">GitHub PR Comment Preview</div>
+    <div class="mockup-body" style="background:#0d1117;color:#e6edf3;font-family:monospace;font-size:13px;line-height:1.7;padding:20px;border-radius:0 0 8px 8px">
+
+      <span style="color:#58a6ff;font-size:16px;font-weight:bold">## AI Code Review</span><br><br>
+
+      <span style="color:#8b949e">This PR adds HMAC-validated webhook ingestion and a full GitHub App service layer (JWT auth, diff fetching, position mapping, review submission). Two security findings block merge; remaining issues are style and coverage suggestions.</span><br><br>
+
+      <hr style="border-color:#30363d;margin:10px 0"><br>
+
+      <span style="color:#e6edf3;font-weight:bold">📁 Changes</span><br>
+      2 files · +305 −12 lines<br><br>
+
+      <span style="color:#e6edf3;font-weight:bold">🔴 Critical Issues</span><br>
+      • [security] Webhook secret logged in plaintext — <span style="color:#7ee787">webhook.py:45</span><br>
+      • [bug] Token not refreshed on 401 — <span style="color:#7ee787">github.py:89</span><br><br>
+
+      <span style="color:#e6edf3;font-weight:bold">📊 Findings (8 total)</span><br>
+      Bug: 1 · Security: 2 · Style: 3 · Performance: 1 · Test Coverage: 1<br>
+      Severity: 2 errors · 4 warnings · 2 info<br>
+
+    </div>
+  </div>
+
+  <div style="margin-top:20px">
+    <p class="subtitle" style="text-align:left"><strong>Two small decisions to confirm:</strong></p>
+    <ol style="color:#e6edf3;line-height:2">
+      <li>How many critical issues to surface? <strong>Top 2 errors only</strong> vs <strong>top 3 by severity</strong></li>
+      <li>Verdict removed from body — GitHub will still request changes / approve via the API event. OK?</li>
+    </ol>
+  </div>
+</div>

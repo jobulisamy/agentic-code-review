@@ -1,0 +1,6 @@
+{"type":"server-started","port":54098,"host":"127.0.0.1","url_host":"localhost","url":"http://localhost:54098","screen_dir":"/Users/jaio/Desktop/Projects/agentic-code-review/.superpowers/brainstorm/11495-1773451142"}
+{"type":"screen-added","file":"/Users/jaio/Desktop/Projects/agentic-code-review/.superpowers/brainstorm/11495-1773451142/summary-formats.html"}
+{"type":"screen-added","file":"/Users/jaio/Desktop/Projects/agentic-code-review/.superpowers/brainstorm/11495-1773451142/summary-merged.html"}
+{"type":"screen-added","file":"/Users/jaio/Desktop/Projects/agentic-code-review/.superpowers/brainstorm/11495-1773451142/summary-merged-v2.html"}
+{"type":"screen-added","file":"/Users/jaio/Desktop/Projects/agentic-code-review/.superpowers/brainstorm/11495-1773451142/waiting.html"}
+{"type":"server-stopped","reason":"idle timeout"}
