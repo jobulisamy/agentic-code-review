@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: planning
-stopped_at: Completed 03-03-PLAN.md
-last_updated: "2026-03-14T00:14:25.149Z"
+stopped_at: Completed 03-04-PLAN.md Task 1 — awaiting human-verify checkpoint Task 2
+last_updated: "2026-03-14T00:20:27.636Z"
 last_activity: "2026-03-12 — Roadmap restructured: Web UI paste tool removed; GitHub Integration is now Phase 3"
 progress:
   total_phases: 4
-  completed_phases: 2
+  completed_phases: 3
   total_plans: 13
-  completed_plans: 12
+  completed_plans: 13
   percent: 50
 ---
 
@@ -58,6 +58,7 @@ Progress: [██████░░░░] 50%
 | Phase 03-github-integration P01 | 5 | 2 tasks | 6 files |
 | Phase 03-github-integration P02 | 3 | 2 tasks | 4 files |
 | Phase 03-github-integration P03 | 5 | 2 tasks | 3 files |
+| Phase 03-github-integration P04 | 3 | 1 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -98,6 +99,8 @@ Recent decisions affecting current work:
 - [Phase 03-github-integration]: unidiff target_line_no + side=RIGHT approach: modern GitHub Reviews API line-based comments (not legacy diff_position integer)
 - [Phase 03-github-integration]: finding_to_comment returns None when line not in valid_positions: prevents 422 Unprocessable Entity from GitHub on deleted/context-only lines
 - [Phase 03-github-integration]: format_summary_comment returns (body, event) tuple: event='REQUEST_CHANGES' if any error-severity finding, 'APPROVE' otherwise (including zero findings)
+- [Phase 03-github-integration]: file_results list[tuple[str, list[Finding]]] per-file tracking: correct inline comment file matching; KeyError/TypeError guard on payload extraction: keeps pre-existing HMAC tests green with background task running inline
+- [Phase 03-github-integration]: All DB writes in single AsyncSessionLocal() block: Repo flush + Review adds + commit in one transaction; private_key.replace() at call site in run_webhook_review per Plan 03 delegation decision
 
 ### Pending Todos
 
@@ -110,7 +113,7 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-14T00:14:25.143Z
-Stopped at: Completed 03-03-PLAN.md
+Last session: 2026-03-14T00:20:27.630Z
+Stopped at: Completed 03-04-PLAN.md Task 1 — awaiting human-verify checkpoint Task 2
 Resume file: None
 Next: /gsd:discuss-phase 3 (or /gsd:plan-phase 3 to skip discussion)

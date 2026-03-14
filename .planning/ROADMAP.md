@@ -14,7 +14,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Foundation** - Docker Compose environment, FastAPI skeleton, async SQLAlchemy + Alembic, health endpoint (completed 2026-03-12)
 - [x] **Phase 2: Core Review Pipeline** - Chunker, LLM provider abstraction (Groq default / Claude fallback), pipeline orchestrator, `POST /api/review` (completed 2026-03-13)
-- [ ] **Phase 3: GitHub Integration** - Webhook receipt with HMAC validation, diff-position mapping, inline PR comments, summary comment
+- [x] **Phase 3: GitHub Integration** - Webhook receipt with HMAC validation, diff-position mapping, inline PR comments, summary comment (completed 2026-03-14)
 - [ ] **Phase 4: History and Dashboard** - Per-repo history injection into prompts, review dashboard with stats, read-path API endpoints
 
 ## Phase Details
@@ -88,5 +88,5 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 |-------|----------------|--------|-----------|
 | 1. Foundation | 4/4 | Complete   | 2026-03-12 |
 | 2. Core Review Pipeline | 5/5 | Complete   | 2026-03-13 |
-| 3. GitHub Integration | 3/4 | In Progress|  |
+| 3. GitHub Integration | 4/4 | Complete   | 2026-03-14 |
 | 4. History and Dashboard | 0/? | Not started | - |

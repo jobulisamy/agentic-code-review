@@ -28,7 +28,7 @@
 
 ### GitHub Integration
 
-- [ ] **GH-01**: GitHub App is configured with webhook on `pull_request` events (opened, synchronize)
+- [x] **GH-01**: GitHub App is configured with webhook on `pull_request` events (opened, synchronize)
 - [x] **GH-02**: Webhook endpoint validates HMAC-SHA256 signature before processing
 - [x] **GH-03**: Webhook endpoint returns HTTP 200 immediately; pipeline runs in background
 - [x] **GH-04**: PR diff is fetched from GitHub API and passed through the review pipeline
@@ -118,7 +118,7 @@
 | PIPE-09 | Phase 2 | Complete |
 | API-01 | Phase 2 | Complete |
 | API-06 | Phase 2 | Complete |
-| GH-01 | Phase 3 | Pending |
+| GH-01 | Phase 3 | Complete |
 | GH-02 | Phase 3 | Complete |
 | GH-03 | Phase 3 | Complete |
 | GH-04 | Phase 3 | Complete |
