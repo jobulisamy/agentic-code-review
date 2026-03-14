@@ -12,9 +12,11 @@ from app.models.repo import Repo
 from app.models.review import Review
 from app.pipeline.orchestrator import run_review, ReviewPipelineError
 from app.services.github import (
+    FileFinding,
     get_installation_token,
     fetch_pr_diff,
     build_diff_comment_positions,
+    parse_diff_stats,
     finding_to_comment,
     format_summary_comment,
     submit_review,
@@ -168,8 +170,17 @@ async def run_webhook_review(payload: dict, settings: Settings) -> None:
                 inline_comments.append(comment)
 
     # Step 7: Format summary and submit review as a single Reviews API call
-    all_findings = [f for _, findings in file_results for f in findings]
-    summary_body, event = format_summary_comment(all_findings)
+    # Extract PR title and parse diff stats
+    pr_title = payload.get("pull_request", {}).get("title", "")
+    diff_stats = parse_diff_stats(diff_text)
+
+    # Build FileFinding objects pairing each finding with its file path
+    file_findings = [
+        FileFinding(finding=f, file_path=file_path)
+        for file_path, findings in file_results
+        for f in findings
+    ]
+    summary_body, event = format_summary_comment(file_findings, diff_stats, pr_title)
     try:
         await submit_review(
             owner, repo_name, pr_number, head_sha,
