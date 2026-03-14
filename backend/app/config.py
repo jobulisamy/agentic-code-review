@@ -9,6 +9,8 @@ class Settings(BaseSettings):
     groq_api_key: str = ""
     llm_provider: str = "groq"
     github_webhook_secret: str = ""
+    github_app_id: str = ""
+    github_private_key: str = ""  # stored with \n escaped in .env; use .replace("\\n", "\n") when signing JWTs
 
     model_config = SettingsConfigDict(
         env_file=".env",
