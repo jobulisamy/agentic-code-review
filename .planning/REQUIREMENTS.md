@@ -31,11 +31,11 @@
 - [ ] **GH-01**: GitHub App is configured with webhook on `pull_request` events (opened, synchronize)
 - [x] **GH-02**: Webhook endpoint validates HMAC-SHA256 signature before processing
 - [x] **GH-03**: Webhook endpoint returns HTTP 200 immediately; pipeline runs in background
-- [ ] **GH-04**: PR diff is fetched from GitHub API and passed through the review pipeline
-- [ ] **GH-05**: Findings are posted as inline review comments on the correct diff lines
-- [ ] **GH-06**: Diff position (not file line number) is used for inline comment placement
-- [ ] **GH-07**: A summary comment is posted at the top of the PR with: total issues, breakdown by category, severity counts, and overall verdict (APPROVE / REQUEST CHANGES)
-- [ ] **GH-08**: GitHub App installation token is fetched per-request (not cached globally)
+- [x] **GH-04**: PR diff is fetched from GitHub API and passed through the review pipeline
+- [x] **GH-05**: Findings are posted as inline review comments on the correct diff lines
+- [x] **GH-06**: Diff position (not file line number) is used for inline comment placement
+- [x] **GH-07**: A summary comment is posted at the top of the PR with: total issues, breakdown by category, severity counts, and overall verdict (APPROVE / REQUEST CHANGES)
+- [x] **GH-08**: GitHub App installation token is fetched per-request (not cached globally)
 
 ### Persistence
 
@@ -121,11 +121,11 @@
 | GH-01 | Phase 3 | Pending |
 | GH-02 | Phase 3 | Complete |
 | GH-03 | Phase 3 | Complete |
-| GH-04 | Phase 3 | Pending |
-| GH-05 | Phase 3 | Pending |
-| GH-06 | Phase 3 | Pending |
-| GH-07 | Phase 3 | Pending |
-| GH-08 | Phase 3 | Pending |
+| GH-04 | Phase 3 | Complete |
+| GH-05 | Phase 3 | Complete |
+| GH-06 | Phase 3 | Complete |
+| GH-07 | Phase 3 | Complete |
+| GH-08 | Phase 3 | Complete |
 | API-02 | Phase 3 | Complete |
 | DB-01 | Phase 3 | Complete |
 | DB-02 | Phase 3 | Complete |

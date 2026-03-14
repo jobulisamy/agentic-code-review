@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: planning
-stopped_at: Completed 03-02-PLAN.md
-last_updated: "2026-03-14T00:09:11.436Z"
+stopped_at: Completed 03-03-PLAN.md
+last_updated: "2026-03-14T00:14:25.149Z"
 last_activity: "2026-03-12 — Roadmap restructured: Web UI paste tool removed; GitHub Integration is now Phase 3"
 progress:
   total_phases: 4
   completed_phases: 2
   total_plans: 13
-  completed_plans: 11
+  completed_plans: 12
   percent: 50
 ---
 
@@ -57,6 +57,7 @@ Progress: [██████░░░░] 50%
 | Phase 02-core-review-pipeline P05 | 9 | 3 tasks | 10 files |
 | Phase 03-github-integration P01 | 5 | 2 tasks | 6 files |
 | Phase 03-github-integration P02 | 3 | 2 tasks | 4 files |
+| Phase 03-github-integration P03 | 5 | 2 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -93,6 +94,10 @@ Recent decisions affecting current work:
 - [Phase 03-github-integration]: Explicit op.create_table in migration 0002 (not autogenerate): deterministic and portable without needing full app environment
 - [Phase 03-github-integration]: HMAC validation on raw request bytes before JSON parsing — avoids key-ordering divergence; HTTPException 403 with no body on HMAC failure
 - [Phase 03-github-integration]: test_db_writes RED stub intentional until Plan 04; test patching via get_settings override (not lru_cache clear) for webhook secret in tests
+- [Phase 03-github-integration]: fresh httpx.AsyncClient per call: no token or client caching across calls (GH-08) — prevents stale token bugs in concurrent webhook handling
+- [Phase 03-github-integration]: unidiff target_line_no + side=RIGHT approach: modern GitHub Reviews API line-based comments (not legacy diff_position integer)
+- [Phase 03-github-integration]: finding_to_comment returns None when line not in valid_positions: prevents 422 Unprocessable Entity from GitHub on deleted/context-only lines
+- [Phase 03-github-integration]: format_summary_comment returns (body, event) tuple: event='REQUEST_CHANGES' if any error-severity finding, 'APPROVE' otherwise (including zero findings)
 
 ### Pending Todos
 
@@ -105,7 +110,7 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-14T00:09:11.429Z
-Stopped at: Completed 03-02-PLAN.md
+Last session: 2026-03-14T00:14:25.143Z
+Stopped at: Completed 03-03-PLAN.md
 Resume file: None
 Next: /gsd:discuss-phase 3 (or /gsd:plan-phase 3 to skip discussion)
