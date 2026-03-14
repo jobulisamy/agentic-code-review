@@ -4,7 +4,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from alembic.config import Config
 from alembic import command
-from app.routers import health, review
+from app.routers import health, review, webhook
 
 
 def _run_migrations():
@@ -30,3 +30,4 @@ app = FastAPI(title="Agentic Code Review", lifespan=lifespan)
 
 app.include_router(health.router)
 app.include_router(review.router)
+app.include_router(webhook.router)
