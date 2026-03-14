@@ -24,8 +24,10 @@ if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
 # target_metadata for autogenerate support.
-# Phase 1: No ORM models yet. Phase 2 will set this to Base.metadata.
-target_metadata = None
+# Phase 3: Import ORM models so autogenerate can detect schema changes.
+from app.models.repo import Base as RepoBase
+from app.models.review import Review  # noqa: F401 — ensures Review is registered in Base.metadata
+target_metadata = RepoBase.metadata
 
 
 def do_run_migrations(connection):
