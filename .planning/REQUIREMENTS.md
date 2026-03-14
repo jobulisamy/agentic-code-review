@@ -39,9 +39,9 @@
 
 ### Persistence
 
-- [ ] **DB-01**: Every completed review is saved to SQLite after pipeline completion
-- [ ] **DB-02**: Reviews are associated with a repo record (github_repo_id, repo_name)
-- [ ] **DB-03**: Reviews store: repo_id, pr_number, file_path, code_snippet, findings_json, reviewed_at
+- [x] **DB-01**: Every completed review is saved to SQLite after pipeline completion
+- [x] **DB-02**: Reviews are associated with a repo record (github_repo_id, repo_name)
+- [x] **DB-03**: Reviews store: repo_id, pr_number, file_path, code_snippet, findings_json, reviewed_at
 
 ### History & Context
 
@@ -127,9 +127,9 @@
 | GH-07 | Phase 3 | Pending |
 | GH-08 | Phase 3 | Pending |
 | API-02 | Phase 3 | Pending |
-| DB-01 | Phase 3 | Pending |
-| DB-02 | Phase 3 | Pending |
-| DB-03 | Phase 3 | Pending |
+| DB-01 | Phase 3 | Complete |
+| DB-02 | Phase 3 | Complete |
+| DB-03 | Phase 3 | Complete |
 | HIST-01 | Phase 4 | Pending |
 | HIST-02 | Phase 4 | Pending |
 | HIST-03 | Phase 4 | Pending |

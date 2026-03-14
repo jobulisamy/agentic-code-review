@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: planning
-stopped_at: Phase 3 context gathered
-last_updated: "2026-03-13T23:37:25.880Z"
+stopped_at: Completed 03-01-PLAN.md
+last_updated: "2026-03-14T00:03:56.356Z"
 last_activity: "2026-03-12 — Roadmap restructured: Web UI paste tool removed; GitHub Integration is now Phase 3"
 progress:
   total_phases: 4
   completed_phases: 2
-  total_plans: 9
-  completed_plans: 9
+  total_plans: 13
+  completed_plans: 10
   percent: 50
 ---
 
@@ -55,6 +55,7 @@ Progress: [██████░░░░] 50%
 | Phase 02-core-review-pipeline P04 | 3 | 2 tasks | 2 files |
 | Phase 02-core-review-pipeline P04 | 15 | 3 tasks | 2 files |
 | Phase 02-core-review-pipeline P05 | 9 | 3 tasks | 10 files |
+| Phase 03-github-integration P01 | 5 | 2 tasks | 6 files |
 
 ## Accumulated Context
 
@@ -86,6 +87,9 @@ Recent decisions affecting current work:
 - [Phase 02-core-review-pipeline]: ReviewPipelineError and build_review_prompt moved to services/llm.py (canonical); claude.py re-exports both for backward compatibility
 - [Phase 02-core-review-pipeline]: get_provider raises ReviewPipelineError eagerly before chunking when required API key is empty string
 - [Phase 02-core-review-pipeline]: mock_anthropic conftest fixture also patches orchestrator.get_provider so test_review_router.py needs zero changes
+- [Phase 03-github-integration]: Deferred imports inside test stubs (imports inside function bodies): files always collectable, RED state with runtime ModuleNotFoundError
+- [Phase 03-github-integration]: Single shared Base from app.models.repo: all models share one DeclarativeBase metadata for Alembic autogenerate correctness
+- [Phase 03-github-integration]: Explicit op.create_table in migration 0002 (not autogenerate): deterministic and portable without needing full app environment
 
 ### Pending Todos
 
@@ -98,7 +102,7 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-13T23:37:25.650Z
-Stopped at: Phase 3 context gathered
-Resume file: .planning/phases/03-github-integration/03-CONTEXT.md
+Last session: 2026-03-14T00:03:56.352Z
+Stopped at: Completed 03-01-PLAN.md
+Resume file: None
 Next: /gsd:discuss-phase 3 (or /gsd:plan-phase 3 to skip discussion)
